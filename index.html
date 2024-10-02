@@ -34,7 +34,7 @@
     <div id="controls">
         <h4>Layers</h4>
         <label><input type="checkbox" id="boundary-layer" checked> City Boundary</label><br>
-        <label><input type="checkbox" id="taxlots-layer" checked> Tax Lots</label><br>
+        <label><input type="checkbox" id="taxlots-layer"> Tax Lots</label><br> <!-- Unchecked by default -->
         <label><input type="checkbox" id="zoning-layer" checked> Zoning</label>
     </div>
     <div id="map"></div>
@@ -60,7 +60,7 @@
             boundaryLayer.loadGeoJson('https://storage.googleapis.com/westminster_ca/Westminster_CityBoundary.geojson');
             boundaryLayer.setMap(map);
 
-            // Load the Tax Lots Layer
+            // Load the Tax Lots Layer but do not add it to the map initially
             taxLotsLayer = new google.maps.Data();
             taxLotsLayer.loadGeoJson('https://storage.googleapis.com/westminster_ca/Westminster_CityTaxLots.geojson');
             taxLotsLayer.setStyle({
@@ -68,7 +68,6 @@
                 strokeColor: '#FF0000', // Red border
                 strokeWeight: 2
             });
-            taxLotsLayer.setMap(map);
 
             // Load the Zoning Layer
             zoningLayer = new google.maps.Data();
