@@ -12,87 +12,94 @@
         }
 
         #map {
-            height: 100vh;
+            height: 90vh;
             width: 100%;
         }
 
-        #legend {
-            background: white;
+        #controls {
             padding: 10px;
-            margin: 10px;
-            font-family: 'Roboto', sans-serif;
-            font-size: 14px;
+            background-color: white;
             border: 1px solid #ccc;
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            z-index: 5;
             box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
             border-radius: 8px;
-        }
-
-        .legend-item {
-            display: flex;
-            align-items: center;
-            margin-bottom: 5px;
-        }
-
-        .color-box {
-            width: 20px;
-            height: 20px;
-            margin-right: 8px;
-            border: 1px solid #000;
         }
     </style>
 </head>
 <body>
     <h3>GIS Zoning Map (Westminster, CA)</h3>
+    <div id="controls">
+        <h4>Layers</h4>
+        <label><input type="checkbox" id="boundary-layer" checked> City Boundary</label><br>
+        <label><input type="checkbox" id="taxlots-layer" checked> Tax Lots</label><br>
+        <label><input type="checkbox" id="zoning-layer" checked> Zoning</label>
+    </div>
     <div id="map"></div>
-    <div id="legend"><h4>Legend</h4></div>
 
     <!-- Load the Google Maps JavaScript API -->
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCopWxzsrH0C5BUwVKJl0iG3omupkgmw60&callback=initMap" async defer></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&callback=initMap" async defer></script>
     
     <script>
+        let map;
+        let boundaryLayer, taxLotsLayer, zoningLayer;
+
         // Initialize and add the map
         function initMap() {
-            const centerPoint = { lat: 33.7513, lng: -117.9935 }; // Coordinates for Westminster, CA
+            const centerPoint = { lat: 33.7513, lng: -117.9935 }; 
 
-            const map = new google.maps.Map(document.getElementById('map'), {
+            map = new google.maps.Map(document.getElementById('map'), {
                 zoom: 12,
                 center: centerPoint
             });
 
-            // Load the GeoJSON files
-            map.data.loadGeoJson('https://storage.googleapis.com/westminster_ca/Westminster_CityBoundary.geojson');
-            map.data.loadGeoJson('https://storage.googleapis.com/westminster_ca/Westminster_CityTaxLots.geojson');
-            map.data.loadGeoJson('https://storage.googleapis.com/westminster_ca/Westminster_CityZoning.geojson');
+            // Load the GeoJSON layers
+            boundaryLayer = new google.maps.Data();
+            boundaryLayer.loadGeoJson('https://storage.googleapis.com/westminster_ca/Westminster_CityBoundary.geojson');
+            boundaryLayer.setMap(map);
 
-            // Define a function to style the GeoJSON based on the "Zoning Code"
-            function getZoningColor(zoningCode) {
-                switch (zoningCode) {
-                    case 'A-1': return '#00bfff';
-                    case 'C-1': return '#ffff66';
-                    // Add other cases as needed
-                    default: return '#808080';
-                }
+            taxLotsLayer = new google.maps.Data();
+            taxLotsLayer.loadGeoJson('https://storage.googleapis.com/westminster_ca/Westminster_CityTaxLots.geojson');
+            taxLotsLayer.setMap(map);
+
+            zoningLayer = new google.maps.Data();
+            zoningLayer.loadGeoJson('https://storage.googleapis.com/westminster_ca/Westminster_CityZoning.geojson');
+            zoningLayer.setStyle(styleZoningLayer);
+            zoningLayer.setMap(map);
+
+            // Add layer controls
+            document.getElementById('boundary-layer').addEventListener('change', function() {
+                boundaryLayer.setMap(this.checked ? map : null);
+            });
+
+            document.getElementById('taxlots-layer').addEventListener('change', function() {
+                taxLotsLayer.setMap(this.checked ? map : null);
+            });
+
+            document.getElementById('zoning-layer').addEventListener('change', function() {
+                zoningLayer.setMap(this.checked ? map : null);
+            });
+        }
+
+        // Style function for zoning layer based on "ZONEDEF2" property
+        function styleZoningLayer(feature) {
+            const zoneType = feature.getProperty('ZONEDEF2');
+            let fillColor = '#808080'; // Default color
+            switch (zoneType) {
+                case 'Residential': fillColor = '#00bfff'; break;
+                case 'Commercial': fillColor = '#ffff66'; break;
+                case 'Industrial': fillColor = '#ff6347'; break;
+                // Add other cases as needed
+                default: fillColor = '#808080'; break;
             }
-
-            // Set the style for GeoJSON features
-            map.data.setStyle((feature) => {
-                const zoningCode = feature.getProperty('Zoning Code');
-                return {
-                    fillColor: getZoningColor(zoningCode),
-                    strokeColor: null,
-                    strokeWeight: 0,
-                    fillOpacity: 0.6
-                };
-            });
-
-            // Add an info window on click
-            map.data.addListener('click', (event) => {
-                const infoWindow = new google.maps.InfoWindow({
-                    content: `Zoning Code: ${event.feature.getProperty('Zoning Code') || 'N/A'}`,
-                    position: event.latLng
-                });
-                infoWindow.open(map);
-            });
+            return {
+                fillColor: fillColor,
+                strokeColor: null,
+                strokeWeight: 0,
+                fillOpacity: 0.6
+            };
         }
     </script>
 </body>
