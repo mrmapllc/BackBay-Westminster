@@ -21,7 +21,7 @@
             background-color: white;
             border: 1px solid #ccc;
             position: absolute;
-            top: 10px;
+            bottom: 20px; /* Adjusted to move the control box lower */
             left: 10px;
             z-index: 5;
             box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
@@ -40,7 +40,7 @@
     <div id="map"></div>
 
     <!-- Load the Google Maps JavaScript API -->
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCopWxzsrH0C5BUwVKJl0iG3omupkgmw60&callback=initMap" async defer></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&callback=initMap" async defer></script>
     
     <script>
         let map;
@@ -55,15 +55,22 @@
                 center: centerPoint
             });
 
-            // Load the GeoJSON layers
+            // Load the City Boundary Layer
             boundaryLayer = new google.maps.Data();
             boundaryLayer.loadGeoJson('https://storage.googleapis.com/westminster_ca/Westminster_CityBoundary.geojson');
             boundaryLayer.setMap(map);
 
+            // Load the Tax Lots Layer
             taxLotsLayer = new google.maps.Data();
             taxLotsLayer.loadGeoJson('https://storage.googleapis.com/westminster_ca/Westminster_CityTaxLots.geojson');
+            taxLotsLayer.setStyle({
+                fillOpacity: 0, // 100% transparent fill
+                strokeColor: '#FF0000', // Red border
+                strokeWeight: 2
+            });
             taxLotsLayer.setMap(map);
 
+            // Load the Zoning Layer
             zoningLayer = new google.maps.Data();
             zoningLayer.loadGeoJson('https://storage.googleapis.com/westminster_ca/Westminster_CityZoning.geojson');
             zoningLayer.setStyle(styleZoningLayer);
@@ -86,21 +93,46 @@
         // Style function for zoning layer based on "ZONEDEF2" property
         function styleZoningLayer(feature) {
             const zoneType = feature.getProperty('ZONEDEF2');
-            let fillColor = '#808080'; // Default color
+            let fillColor = '#808080'; // Default color for unspecified zones
+            
+            // Assign colors based on the "ZONEDEF2" values
             switch (zoneType) {
-                case 'Residential': fillColor = '#00bfff'; break;
-                case 'Commercial': fillColor = '#ffff66'; break;
-                case 'Industrial': fillColor = '#ff6347'; break;
-                // Add other cases as needed
-                default: fillColor = '#808080'; break;
+                case 'C1 (Local Business) District': fillColor = '#00bfff'; break;  // Light blue
+                case 'C2 (General Business) District': fillColor = '#ffff66'; break;  // Light yellow
+                case 'CEM (Cemetery) District': fillColor = '#ff69b4'; break;  // Pink
+                case 'CM (Commercial-Industrial) District': fillColor = '#8b0000'; break;  // Dark red
+                case 'CR (Restricted Commercial) District': fillColor = '#8a2be2'; break;  // Blue violet
+                case 'FC (Flood Control Channel)': fillColor = '#d3d3d3'; break;  // Light gray
+                case 'M1 (Light Industrial) District': fillColor = '#ffa07a'; break;  // Light salmon
+                case 'M2 (Medium Industrial)': fillColor = '#a0522d'; break;  // Sienna
+                case 'MU36 (Mixed-Use 36 units/acre)': fillColor = '#9370db'; break;  // Medium purple
+                case 'MU40 (Mixed-Use 40 units/acre)': fillColor = '#d8bfd8'; break;  // Thistle
+                case 'P/OS (Park/Open Space) District': fillColor = '#006400'; break;  // Dark green
+                case 'P/SP (Public/Semi-Public) District': fillColor = '#ffd700'; break;  // Gold
+                case 'PF (Public Facilities) District': fillColor = '#ff4500'; break;  // Orange red
+                case 'R-3 (Multiple Family Res-13-14 Units/Acre)': fillColor = '#32cd32'; break;  // Lime green
+                case 'R-5 (Multiple Family Res-19-25 Units/Acre)': fillColor = '#ff6347'; break;  // Tomato
+                case 'R1 (Single-Family Residential) District': fillColor = '#40e0d0'; break;  // Turquoise
+                case 'R2 (Multiple-Family Residential -12 Units/Acre) District': fillColor = '#ff7f50'; break;  // Coral
+                case 'R3 (Multiple-Family Residential 13 to 14 Units/Acre) District': fillColor = '#dc143c'; break;  // Crimson
+                case 'R4 (Multiple-Family Residential 15 to 18 Units/Acre)': fillColor = '#8b4513'; break;  // Saddle brown
+                case 'R5 (Multiple-Family Residential 19 to 25 Units/Acre)': fillColor = '#9400d3'; break;  // Dark violet
+                case 'ROW (Right-of-Way)': fillColor = '#d2691e'; break;  // Chocolate
+                case 'RR/ROW (Railroad Right-of-Way)': fillColor = '#a9a9a9'; break;  // Dark gray
+                case 'SOI (Sphere of Influence)': fillColor = '#4682b4'; break;  // Steel blue
+                case 'SP-1 (Specific Plan) District': fillColor = '#7fff00'; break;  // Chartreuse
+                case 'SP-2 (Specific Plan) District': fillColor = '#adff2f'; break;  // Green yellow
+                case 'SP-3 (Westminster Mall Specific Plan)': fillColor = '#228b22'; break;  // Forest green
+                default: fillColor = '#808080'; break;  // Default gray for unspecified zones
             }
+            
             return {
                 fillColor: fillColor,
-                strokeColor: null,
-                strokeWeight: 0,
+                strokeColor: '#000000', // Optional: Border color for zoning
+                strokeWeight: 1,
                 fillOpacity: 0.6
             };
-        }
+        }        
     </script>
 </body>
 </html>
