@@ -27,6 +27,32 @@
             box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
             border-radius: 8px;
         }
+
+        #legend {
+            background-color: white;
+            padding: 10px;
+            margin: 10px;
+            border: 1px solid #ccc;
+            position: absolute;
+            bottom: 20px;
+            right: 10px;
+            z-index: 5;
+            font-family: 'Roboto', sans-serif;
+            font-size: 12px;
+            max-height: 300px;
+            overflow-y: auto;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+        }
+
+        .legend-color {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            margin-right: 6px;
+            border: 1px solid #000;
+            vertical-align: middle;
+        }
     </style>
 </head>
 <body>
@@ -38,6 +64,37 @@
         <label><input type="checkbox" id="zoning-layer" checked> Zoning</label>
     </div>
     <div id="map"></div>
+
+    <!-- Legend for zoning colors -->
+    <div id="legend">
+        <h4>Legend</h4>
+        <div><span class="legend-color" style="background-color: #00bfff;"></span> C1 (Local Business) District</div>
+        <div><span class="legend-color" style="background-color: #ffff66;"></span> C2 (General Business) District</div>
+        <div><span class="legend-color" style="background-color: #ff69b4;"></span> CEM (Cemetery) District</div>
+        <div><span class="legend-color" style="background-color: #8b0000;"></span> CM (Commercial-Industrial) District</div>
+        <div><span class="legend-color" style="background-color: #8a2be2;"></span> CR (Restricted Commercial) District</div>
+        <div><span class="legend-color" style="background-color: #d3d3d3;"></span> FC (Flood Control Channel)</div>
+        <div><span class="legend-color" style="background-color: #ffa07a;"></span> M1 (Light Industrial) District</div>
+        <div><span class="legend-color" style="background-color: #a0522d;"></span> M2 (Medium Industrial)</div>
+        <div><span class="legend-color" style="background-color: #9370db;"></span> MU36 (Mixed-Use 36 units/acre)</div>
+        <div><span class="legend-color" style="background-color: #d8bfd8;"></span> MU40 (Mixed-Use 40 units/acre)</div>
+        <div><span class="legend-color" style="background-color: #006400;"></span> P/OS (Park/Open Space) District</div>
+        <div><span class="legend-color" style="background-color: #ffd700;"></span> P/SP (Public/Semi-Public) District</div>
+        <div><span class="legend-color" style="background-color: #ff4500;"></span> PF (Public Facilities) District</div>
+        <div><span class="legend-color" style="background-color: #32cd32;"></span> R-3 (Multiple Family Res-13-14 Units/Acre)</div>
+        <div><span class="legend-color" style="background-color: #ff6347;"></span> R-5 (Multiple Family Res-19-25 Units/Acre)</div>
+        <div><span class="legend-color" style="background-color: #40e0d0;"></span> R1 (Single-Family Residential) District</div>
+        <div><span class="legend-color" style="background-color: #ff7f50;"></span> R2 (Multiple-Family Residential -12 Units/Acre) District</div>
+        <div><span class="legend-color" style="background-color: #dc143c;"></span> R3 (Multiple-Family Residential 13 to 14 Units/Acre) District</div>
+        <div><span class="legend-color" style="background-color: #8b4513;"></span> R4 (Multiple-Family Residential 15 to 18 Units/Acre)</div>
+        <div><span class="legend-color" style="background-color: #9400d3;"></span> R5 (Multiple-Family Residential 19 to 25 Units/Acre)</div>
+        <div><span class="legend-color" style="background-color: #d2691e;"></span> ROW (Right-of-Way)</div>
+        <div><span class="legend-color" style="background-color: #a9a9a9;"></span> RR/ROW (Railroad Right-of-Way)</div>
+        <div><span class="legend-color" style="background-color: #4682b4;"></span> SOI (Sphere of Influence)</div>
+        <div><span class="legend-color" style="background-color: #7fff00;"></span> SP-1 (Specific Plan) District</div>
+        <div><span class="legend-color" style="background-color: #adff2f;"></span> SP-2 (Specific Plan) District</div>
+        <div><span class="legend-color" style="background-color: #228b22;"></span> SP-3 (Westminster Mall Specific Plan)</div>
+    </div>
 
     <!-- Load the Google Maps JavaScript API -->
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCopWxzsrH0C5BUwVKJl0iG3omupkgmw60&callback=initMap" async defer></script>
@@ -55,9 +112,18 @@
                 center: centerPoint
             });
 
+            // Add the legend to the map
+            const legend = document.getElementById('legend');
+            map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(legend);
+
             // Load the City Boundary Layer
             boundaryLayer = new google.maps.Data();
             boundaryLayer.loadGeoJson('https://storage.googleapis.com/westminster_ca/Westminster_CityBoundary.geojson');
+            boundaryLayer.setStyle({
+                fillOpacity: 0, // 100% transparent fill
+                strokeColor: '#000000', // Black border
+                strokeWeight: 2
+            });
             boundaryLayer.setMap(map);
 
             // Load the Tax Lots Layer but do not add it to the map initially
