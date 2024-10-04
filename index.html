@@ -16,33 +16,28 @@
             width: 100%;
         }
 
-        #controls {
+        /* Styles for controls and legend */
+        .control-box {
             padding: 10px;
             background-color: white;
             border: 1px solid #ccc;
             position: absolute;
-            bottom: 20px; /* Adjusted to move the control box lower */
-            left: 10px;
             z-index: 5;
             box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
             border-radius: 8px;
         }
 
+        #controls {
+            bottom: 20px;
+            left: 10px;
+        }
+
         #legend {
-            background-color: white;
-            padding: 10px;
-            margin: 10px;
-            border: 1px solid #ccc;
-            position: absolute;
             bottom: 20px;
             right: 10px;
-            z-index: 5;
-            font-family: 'Roboto', sans-serif;
-            font-size: 12px;
             max-height: 300px;
             overflow-y: auto;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
-            border-radius: 8px;
+            font-size: 12px;
         }
 
         .legend-color {
@@ -53,20 +48,47 @@
             border: 1px solid #000;
             vertical-align: middle;
         }
+
+        /* Collapsible button styles */
+        .collapse-btn {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 5px;
+            cursor: pointer;
+            border-radius: 5px;
+            position: absolute;
+            z-index: 10;
+        }
+
+        #toggle-legend-btn {
+            bottom: 20px;
+            right: 10px;
+        }
+
+        #toggle-controls-btn {
+            bottom: 20px;
+            left: 10px;
+        }
     </style>
 </head>
 <body>
     <h3>GIS Zoning Map (Westminster, CA)</h3>
-    <div id="controls">
+
+    <!-- Collapsible buttons -->
+    <button id="toggle-legend-btn" class="collapse-btn">Toggle Legend</button>
+    <button id="toggle-controls-btn" class="collapse-btn">Toggle Layers</button>
+
+    <!-- Layers control box -->
+    <div id="controls" class="control-box">
         <h4>Layers</h4>
         <label><input type="checkbox" id="boundary-layer" checked> City Boundary</label><br>
         <label><input type="checkbox" id="taxlots-layer"> Tax Lots</label><br> <!-- Unchecked by default -->
         <label><input type="checkbox" id="zoning-layer" checked> Zoning</label>
     </div>
-    <div id="map"></div>
 
     <!-- Legend for zoning colors -->
-    <div id="legend">
+    <div id="legend" class="control-box">
         <h4>Legend</h4>
         <div><span class="legend-color" style="background-color: #00bfff;"></span> C1 (Local Business) District</div>
         <div><span class="legend-color" style="background-color: #ffff66;"></span> C2 (General Business) District</div>
@@ -95,6 +117,8 @@
         <div><span class="legend-color" style="background-color: #adff2f;"></span> SP-2 (Specific Plan) District</div>
         <div><span class="legend-color" style="background-color: #228b22;"></span> SP-3 (Westminster Mall Specific Plan)</div>
     </div>
+
+    <div id="map"></div>
 
     <!-- Load the Google Maps JavaScript API -->
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCopWxzsrH0C5BUwVKJl0iG3omupkgmw60&callback=initMap" async defer></script>
@@ -153,6 +177,14 @@
             document.getElementById('zoning-layer').addEventListener('change', function() {
                 zoningLayer.setMap(this.checked ? map : null);
             });
+
+            // Add event listeners for the toggle buttons
+            document.getElementById('toggle-legend-btn').addEventListener('click', function() {
+                toggleVisibility('legend');
+            });
+            document.getElementById('toggle-controls-btn').addEventListener('click', function() {
+                toggleVisibility('controls');
+            });
         }
 
         // Style function for zoning layer based on "ZONEDEF2" property
@@ -197,7 +229,17 @@
                 strokeWeight: 1,
                 fillOpacity: 0.6
             };
-        }        
+        }
+
+        // Toggle visibility function
+        function toggleVisibility(elementId) {
+            const element = document.getElementById(elementId);
+            if (element.style.display === 'none') {
+                element.style.display = 'block';
+            } else {
+                element.style.display = 'none';
+            }
+        }
     </script>
 </body>
 </html>
