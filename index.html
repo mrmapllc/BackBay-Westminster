@@ -25,6 +25,7 @@
             z-index: 5;
             box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
             border-radius: 8px;
+            display: none; /* Collapsed by default */
         }
 
         #controls {
@@ -49,35 +50,25 @@
             vertical-align: middle;
         }
 
-        /* Collapsible button styles */
+        /* Styled collapsible buttons */
         .collapse-btn {
-            background-color: #007bff;
-            color: white;
-            border: none;
-            padding: 5px;
+            background-color: white;
+            color: black;
+            border: 1px solid #ccc;
+            padding: 5px 10px;
             cursor: pointer;
-            border-radius: 5px;
-            position: absolute;
-            z-index: 10;
+            border-radius: 3px;
+            margin: 5px;
+            font-size: 14px;
         }
 
-        #toggle-legend-btn {
-            bottom: 20px;
-            right: 10px;
-        }
-
-        #toggle-controls-btn {
-            bottom: 20px;
-            left: 10px;
+        .collapse-btn:hover {
+            background-color: #f0f0f0;
         }
     </style>
 </head>
 <body>
     <h3>GIS Zoning Map (Westminster, CA)</h3>
-
-    <!-- Collapsible buttons -->
-    <button id="toggle-legend-btn" class="collapse-btn">Toggle Legend</button>
-    <button id="toggle-controls-btn" class="collapse-btn">Toggle Layers</button>
 
     <!-- Layers control box -->
     <div id="controls" class="control-box">
@@ -136,6 +127,17 @@
                 center: centerPoint
             });
 
+            // Create buttons for toggling legend and controls
+            const toggleLegendBtn = document.createElement('button');
+            toggleLegendBtn.textContent = 'Toggle Legend';
+            toggleLegendBtn.classList.add('collapse-btn');
+            map.controls[google.maps.ControlPosition.TOP_RIGHT].push(toggleLegendBtn);
+
+            const toggleControlsBtn = document.createElement('button');
+            toggleControlsBtn.textContent = 'Toggle Layers';
+            toggleControlsBtn.classList.add('collapse-btn');
+            map.controls[google.maps.ControlPosition.TOP_RIGHT].push(toggleControlsBtn);
+
             // Add the legend to the map
             const legend = document.getElementById('legend');
             map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(legend);
@@ -179,10 +181,11 @@
             });
 
             // Add event listeners for the toggle buttons
-            document.getElementById('toggle-legend-btn').addEventListener('click', function() {
+            toggleLegendBtn.addEventListener('click', function() {
                 toggleVisibility('legend');
             });
-            document.getElementById('toggle-controls-btn').addEventListener('click', function() {
+
+            toggleControlsBtn.addEventListener('click', function() {
                 toggleVisibility('controls');
             });
         }
