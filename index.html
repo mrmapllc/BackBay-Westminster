@@ -18,7 +18,7 @@
 
         /* Styles for controls and legend */
         .control-box {
-            padding: 10px;
+            padding: 5px 10px; /* Reduced padding */
             background-color: white;
             border: 1px solid #ccc;
             position: absolute;
@@ -29,16 +29,18 @@
         }
 
         #controls {
-            bottom: 20px;
-            left: 10px;
+            bottom: 80px; /* Positioned slightly above the legend */
+            right: 10px;  /* Positioned to the right */
+            width: 150px; /* Adjusted width to fit content */
         }
 
         #legend {
-            bottom: 20px;
+            bottom: 20px; /* Positioned at the bottom-right corner */
             right: 10px;
             max-height: 300px;
             overflow-y: auto;
             font-size: 12px;
+            width: 200px; /* Adjusted width */
         }
 
         .legend-color {
@@ -72,7 +74,7 @@
 
     <!-- Layers control box -->
     <div id="controls" class="control-box">
-        <h4>Layers</h4>
+        <h4 style="margin: 0;">Layers</h4> <!-- Removed margin above the heading -->
         <label><input type="checkbox" id="boundary-layer" checked> City Boundary</label><br>
         <label><input type="checkbox" id="taxlots-layer"> Tax Lots</label><br> <!-- Unchecked by default -->
         <label><input type="checkbox" id="zoning-layer" checked> Zoning</label>
