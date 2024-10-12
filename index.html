@@ -213,6 +213,29 @@
             zoningLayer.setStyle(styleZoningLayer);
             zoningLayer.setMap(map);
 
+            // Add labels for ZONEDEF2 field
+            zoningLayer.addListener('addfeature', function(event) {
+                const zoneName = event.feature.getProperty('ZONEDEF2');
+                
+                // Find the polygon centroid or position
+                const geometry = event.feature.getGeometry();
+                const bounds = new google.maps.LatLngBounds();
+                geometry.forEachLatLng(function(latlng) {
+                    bounds.extend(latlng);
+                });
+                const center = bounds.getCenter();
+
+                // Create an InfoWindow for the ZONEDEF2 field
+                const infowindow = new google.maps.InfoWindow({
+                    content: zoneName,
+                    position: center
+                });
+                infowindow.open(map);
+                
+                // Store the InfoWindow in the feature's properties to manage it later
+                event.feature.setProperty('infowindow', infowindow);
+            });
+            
             // Add layer controls
             document.getElementById('boundary-layer').addEventListener('change', function() {
                 boundaryLayer.setMap(this.checked ? map : null);
