@@ -263,6 +263,7 @@
         // Style function for the tax lots layer based on the "Status" property
         function styleLotsLayer(feature) {
             const status = feature.getProperty('Status');
+            console.log('Lot Status:', status); // Debugging line
             let fillColor = '#ffa500'; // Default for null (gray)
             
             switch (status) {
@@ -303,7 +304,7 @@
             return {
                 fillColor: fillColor,
                 strokeColor: '#ff0000', // Red border
-                strokeWeight: 2,
+                strokeWeight: 1,
                 fillOpacity: 0.5 // 50% transparency
             };
         }
