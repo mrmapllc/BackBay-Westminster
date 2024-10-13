@@ -279,17 +279,17 @@
                 infoWindow.open(map);
             });
 
-            // Add a click listener to the zoning layer for a simple pop-up
+            // Zoning pop-up (only when tax lot layer is off)
             zoningLayer.addListener('click', function(event) {
-                if (!lotPopUpActive) { // Ensure zoning pop-up only shows when lot pop-up is not active
+                if (!lotPopUpActive) {  // Ensure tax lot pop-up is not active
                     const zoning = event.feature.getProperty('ZONEDEF2') || 'Zoning Not Specified';
-
+        
                     const contentString = `
                         <div style="margin: 0; padding: 5px;">
                             <p style="margin: 0; padding: 0;"><strong>Zoning:</strong> ${zoning}</p>
                         </div>
                     `;
-
+        
                     infoWindow.setContent(contentString);
                     infoWindow.setPosition(event.latLng);
                     infoWindow.open(map);
