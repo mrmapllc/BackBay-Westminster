@@ -24,6 +24,23 @@
             justify-content: space-between;
         }
 
+        /* Map Search Bar */
+        .controls {
+            margin-top: 10px;
+            background-color: #fff;
+            border-radius: 3px;
+            border: 1px solid transparent;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+            font-size: 16px;
+            outline: none;
+            padding: 10px;
+            margin-left: 10px;
+            width: 300px;
+            height: 30px;
+            box-sizing: border-box;
+            text-overflow: ellipsis;
+        }
+        
         nav a {
             color: white;
             text-decoration: none;
@@ -161,6 +178,9 @@
         <!-- Map Container -->
         <div id="map"></div>
 
+        <!-- Add the search bar input field -->
+        <input id="pac-input" class="controls" type="text" placeholder="Search for an address" />
+        
         <!-- Loading spinner -->
         <div id="loading">
             <img src="https://i.imgur.com/JfPpwOA.gif" alt="Loading...">
