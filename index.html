@@ -16,13 +16,33 @@
             overflow: hidden;
         }
 
-        /* Full height map container */
-        #map {
+        /* Background container */
+        .container {
+            display: flex;
+            flex-direction: column;
             height: 100%;
+        }
+
+        /* Header styling */
+        header {
+            background-color: #f4f4f4;
+            padding: 10px;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 28px;
+            color: #333;
+        }
+
+        #map {
+            flex-grow: 1;
             width: 100%;
         }
 
-        /* Position the tools button at the top-left */
+        /* Position the Tools button at the top-left */
         #tools-btn {
             position: absolute;
             top: 15px;
@@ -35,7 +55,7 @@
             font-size: 16px;
             cursor: pointer;
             text-decoration: none;
-            z-index: 999; /* Ensure it's on top of the map */
+            z-index: 999;
             transition: background-color 0.3s ease;
         }
 
@@ -109,6 +129,18 @@
 </head>
 <body>
 
+    <div class="container">
+
+        <!-- Header -->
+        <header>
+            <h1>GIS Zoning Map - Westminster, CA</h1>
+        </header>
+
+        <!-- Map Container -->
+        <div id="map"></div>
+
+    </div>
+
     <!-- Tools Button at Top Left -->
     <a href="#" id="tools-btn">Tools</a>
 
@@ -117,9 +149,6 @@
         <a href="https://mrmapllc.github.io/BackBayHomePage/">Home</a>
         <a href="https://mrmapgroup.com/contact-us" target="_blank">Support</a>
     </div>
-
-    <!-- Map Container -->
-    <div id="map"></div>
 
     <!-- Load the Google Maps JavaScript API -->
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCopWxzsrH0C5BUwVKJl0iG3omupkgmw60&callback=initMap" async defer></script>
