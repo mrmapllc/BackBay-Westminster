@@ -208,17 +208,18 @@
         let map;
         let boundaryLayer, taxLotsLayer, zoningLayer;
         let isLoading = true;
-
+        let infoWindow; // Add this line to declare the info window
+        
         // Show loading spinner while the map is loading
         function showLoading() {
             document.getElementById('loading').style.display = 'block';
         }
-
+        
         // Hide loading spinner once the map is loaded
         function hideLoading() {
             document.getElementById('loading').style.display = 'none';
         }
-
+        
         // Toggle the control panel
         document.getElementById('tools-btn').addEventListener('click', function() {
             const controlPanel = document.getElementById('control-panel');
@@ -228,19 +229,21 @@
                 controlPanel.style.display = 'none';
             }
         });
-
+        
         // Initialize and add the map
         function initMap() {
             showLoading();
-
+        
             const centerPoint = { lat: 33.7507, lng: -117.9935 }; // Centered on Westminster
-
+        
             map = new google.maps.Map(document.getElementById('map'), {
-                zoom: 13, // Zoom changed to 13
+                zoom: 13, // Zoom set to 13
                 center: centerPoint,
                 gestureHandling: "greedy" // Allow zooming with mouse scroll directly
             });
-
+        
+            infoWindow = new google.maps.InfoWindow(); // Initialize the info window
+        
             // Load the City Boundary Layer
             boundaryLayer = new google.maps.Data();
             boundaryLayer.loadGeoJson('https://storage.googleapis.com/westminster_ca/Westminster_CityBoundary.geojson');
@@ -250,13 +253,13 @@
                 strokeWeight: 2
             });
             boundaryLayer.setMap(map);
-
+        
             // Load the Zoning Layer
             zoningLayer = new google.maps.Data();
             zoningLayer.loadGeoJson('https://storage.googleapis.com/westminster_ca/Westminster_CityZoning.geojson');
             zoningLayer.setStyle(styleZoningLayer);
             zoningLayer.setMap(map);
-
+        
             // Load the Tax Lots Layer
             taxLotsLayer = new google.maps.Data();
             taxLotsLayer.loadGeoJson('https://storage.googleapis.com/westminster_ca/Westminster_CityTaxLots.geojson');
@@ -265,20 +268,39 @@
                 strokeColor: '#FF0000', // Red border
                 strokeWeight: 2
             });
-
+        
+            // Add a click listener to the tax lots layer to show a pop-up with specific information
+            taxLotsLayer.addListener('click', function(event) {
+                const siteAddress = event.feature.getProperty('SiteAddres');
+                const zoning = event.feature.getProperty('ZONEDEF2');
+                const legalDescription = event.feature.getProperty('LegalDescr');
+        
+                const contentString = `
+                    <div>
+                        <h3>${siteAddress}</h3>
+                        <p><strong>Zoning:</strong> ${zoning}</p>
+                        <p><strong>Legal Description:</strong> ${legalDescription}</p>
+                    </div>
+                `;
+        
+                infoWindow.setContent(contentString);
+                infoWindow.setPosition(event.latLng);
+                infoWindow.open(map);
+            });
+        
             // Add layer control for tax lots and zoning layers
             document.getElementById('boundary-layer').addEventListener('change', function() {
                 boundaryLayer.setMap(this.checked ? map : null);
             });
-
+        
             document.getElementById('taxlots-layer').addEventListener('change', function() {
                 taxLotsLayer.setMap(this.checked ? map : null);
             });
-
+        
             document.getElementById('zoning-layer').addEventListener('change', function() {
                 zoningLayer.setMap(this.checked ? map : null);
             });
-
+        
             // Hide the loading spinner once the map and layers are fully loaded
             google.maps.event.addListenerOnce(map, 'idle', function() {
                 hideLoading();
