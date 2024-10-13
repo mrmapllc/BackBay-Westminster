@@ -184,33 +184,43 @@
     <!-- Load the Google Maps JavaScript API -->
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCopWxzsrH0C5BUwVKJl0iG3omupkgmw60&callback=initMap" async defer></script>
 
-<script>
+    <script>
         let map;
         let boundaryLayer, taxLotsLayer, zoningLayer;
         let isLoading = true;
-    
+
         // Show loading spinner while the map is loading
         function showLoading() {
             document.getElementById('loading').style.display = 'block';
         }
-    
+
         // Hide loading spinner once the map is loaded
         function hideLoading() {
             document.getElementById('loading').style.display = 'none';
         }
-    
+
+        // Toggle the control panel
+        document.getElementById('tools-btn').addEventListener('click', function() {
+            const controlPanel = document.getElementById('control-panel');
+            if (controlPanel.style.display === 'none' || controlPanel.style.display === '') {
+                controlPanel.style.display = 'block';
+            } else {
+                controlPanel.style.display = 'none';
+            }
+        });
+
         // Initialize and add the map
         function initMap() {
             showLoading();
-    
+
             const centerPoint = { lat: 33.7507, lng: -117.9935 }; // Centered on Westminster
-    
+
             map = new google.maps.Map(document.getElementById('map'), {
-                zoom: 13,
+                zoom: 13, // Zoom changed to 13
                 center: centerPoint,
                 gestureHandling: "greedy" // Allow zooming with mouse scroll directly
             });
-    
+
             // Load the City Boundary Layer
             boundaryLayer = new google.maps.Data();
             boundaryLayer.loadGeoJson('https://storage.googleapis.com/westminster_ca/Westminster_CityBoundary.geojson');
@@ -220,14 +230,14 @@
                 strokeWeight: 2
             });
             boundaryLayer.setMap(map);
-    
+
             // Load the Zoning Layer
             zoningLayer = new google.maps.Data();
             zoningLayer.loadGeoJson('https://storage.googleapis.com/westminster_ca/Westminster_CityZoning.geojson');
             zoningLayer.setStyle(styleZoningLayer);
             zoningLayer.setMap(map);
-    
-            // Load the Tax Lots Layer (this is the important part)
+
+            // Load the Tax Lots Layer
             taxLotsLayer = new google.maps.Data();
             taxLotsLayer.loadGeoJson('https://storage.googleapis.com/westminster_ca/Westminster_CityTaxLots.geojson');
             taxLotsLayer.setStyle({
@@ -235,31 +245,31 @@
                 strokeColor: '#FF0000', // Red border
                 strokeWeight: 2
             });
-    
+
             // Add layer control for tax lots and zoning layers
             document.getElementById('boundary-layer').addEventListener('change', function() {
                 boundaryLayer.setMap(this.checked ? map : null);
             });
-    
+
             document.getElementById('taxlots-layer').addEventListener('change', function() {
                 taxLotsLayer.setMap(this.checked ? map : null);
             });
-    
+
             document.getElementById('zoning-layer').addEventListener('change', function() {
                 zoningLayer.setMap(this.checked ? map : null);
             });
-    
+
             // Hide the loading spinner once the map and layers are fully loaded
             google.maps.event.addListenerOnce(map, 'idle', function() {
                 hideLoading();
             });
         }
-    
+
         // Style function for zoning layer based on "ZONEDEF2" property
         function styleZoningLayer(feature) {
             const zoneType = feature.getProperty('ZONEDEF2');
             let fillColor = '#808080'; // Default color for unspecified zones
-    
+
             // Assign colors based on the "ZONEDEF2" values
             switch (zoneType) {
                 case 'C1 (Local Business) District': fillColor = '#00bfff'; break;  // Light blue
@@ -269,7 +279,7 @@
                 case 'CR (Restricted Commercial) District': fillColor = '#8a2be2'; break;  // Blue violet
                 default: fillColor = '#808080'; break;  // Default gray for unspecified zones
             }
-    
+
             return {
                 fillColor: fillColor,
                 strokeColor: '#000000', // Black border for zoning
