@@ -16,405 +16,145 @@
             width: 100%;
         }
 
-        /* Styles for controls and legend */
-        .control-box {
-            padding: 5px 10px; /* Reduced padding */
-            background-color: white;
-            border: 1px solid #ccc;
-            position: absolute;
-            z-index: 5;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
-            border-radius: 8px;
-            display: none; /* Collapsed by default */
+        /* Styles for header */
+        header {
+            position: relative;
+            padding: 20px;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
-        #controls {
-            bottom: 80px; /* Positioned slightly above the legend */
-            left: 10px;  /* Positioned to the left */
-            width: 150px; /* Adjusted width to fit content */
+        h3 {
+            margin: 0;
+            font-size: 24px;
+            color: #333;
         }
 
-        #legend {
-            bottom: 20px; /* Positioned at the left corner */
-            left: 10px;
-            max-height: 300px;
-            overflow-y: auto;
-            font-size: 12px;
-            width: 400px; /* Adjusted width */
-        }
-
-        .legend-color {
-            display: inline-block;
-            width: 16px;
-            height: 16px;
-            margin-right: 6px;
-            border: 1px solid #000;
-            vertical-align: middle;
-        }
-
-        /* Styled collapsible buttons */
-        .collapse-btn {
-            background-color: white;
-            color: black;
-            border: 1px solid #ccc;
-            padding: 5px 10px;
-            cursor: pointer;
-            border-radius: 3px;
-            margin: 5px;
-            font-size: 14px;
-        }
-
-        .collapse-btn:hover {
-            background-color: #f0f0f0;
-        }
-
-        /* Style for the search bar */
-        .controls {
-            margin-top: 10px;
-            background-color: #fff;
-            border-radius: 3px;
-            border: 1px solid transparent;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+        /* Back to Home button */
+        .back-home-btn {
+            padding: 10px 15px;
+            background-color: #0088cc;
+            color: white;
+            text-decoration: none;
             font-size: 16px;
-            outline: none;
-            padding: 10px;
-            margin-left: 10px;
-            width: 400px;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+
+        .back-home-btn:hover {
+            background-color: #005f99;
+        }
+
+        /* Styles for custom labels */
+        .zone-label {
+            color: #000;
+            font-size: 12px;
+            font-weight: 400;
+            padding: 2px 5px;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 4px;
+            white-space: nowrap;
         }
     </style>
 </head>
 <body>
-    <h3>GIS Zoning Map (Westminster, CA)</h3>
-
-    <!-- Back to Home Button -->
-    <a href="https://mrmapllc.github.io/BackBayHomePage/" class="back-home-btn">Back to Home</a>
-    
-    <!-- Search bar input field -->
-    <input id="pac-input" class="controls" type="text" placeholder="Search for an address" />
-
-    <!-- Layers control box -->
-    <div id="controls" class="control-box">
-        <h4 style="margin: 0;">Layers</h4> <!-- Removed margin above the heading -->
-        <label><input type="checkbox" id="boundary-layer" checked> City Boundary</label><br>
-        <label><input type="checkbox" id="taxlots-layer" checked> Tax Lots</label><br>
-        <label><input type="checkbox" id="zoning-layer" checked> Zoning</label>
-    </div>
-
-
-    <!-- Legend for zoning and lots symbology -->
-    <div id="legend" class="control-box">
-        <h4>Legend</h4>
-        <h5>Tax Lots Status</h5>
-        <div><span class="legend-color" style="background-color: #808080;"></span> Null (Unspecified)</div>
-        <div><span class="legend-color" style="background-color: #00bfff;"></span> Qualified</div>
-        <div><span class="legend-color" style="background-color: #ff69b4;"></span> Contacted</div>
-        <div><span class="legend-color" style="background-color: #ffd700;"></span> Prospect</div>
-        <div><span class="legend-color" style="background-color: #ff4500;"></span> Offer Out</div>
-        <div><span class="legend-color" style="background-color: #8a2be2;"></span> Negotiation</div>
-        <div><span class="legend-color" style="background-color: #32cd32;"></span> Accepted Offer</div>
-        <div><span class="legend-color" style="background-color: #ff6347;"></span> PSA Signed</div>
-        <div><span class="legend-color" style="background-color: #9400d3;"></span> Closed</div>
-        <div><span class="legend-color" style="background-color: #8b0000;"></span> No-Gos</div>
-        <div><span class="legend-color" style="background-color: #ffa500;"></span> Other (Default)</div>
-
-        <h5>Zoning</h5>
-        <div><span class="legend-color" style="background-color: #808080;"></span> Null (Unspecified)</div>
-        <div><span class="legend-color" style="background-color: #00bfff;"></span> Qualified</div>
-        <div><span class="legend-color" style="background-color: #ff69b4;"></span> Contacted</div>
-        <div><span class="legend-color" style="background-color: #ffd700;"></span> Prospect</div>
-        <div><span class="legend-color" style="background-color: #ff4500;"></span> Offer Out</div>
-        <div><span class="legend-color" style="background-color: #8a2be2;"></span> Negotiation</div>
-        <div><span class="legend-color" style="background-color: #32cd32;"></span> Accepted Offer</div>
-        <div><span class="legend-color" style="background-color: #ff6347;"></span> PSA Signed</div>
-        <div><span class="legend-color" style="background-color: #9400d3;"></span> Closed</div>
-        <div><span class="legend-color" style="background-color: #8b0000;"></span> No-Gos</div>
-
-        <h5>Zoning</h5>
-        <div><span class="legend-color" style="background-color: #00bfff;"></span> C1 (Local Business) District</div>
-        <div><span class="legend-color" style="background-color: #ffff66;"></span> C2 (General Business) District</div>
-        <div><span class="legend-color" style="background-color: #ff69b4;"></span> CEM (Cemetery) District</div>
-        <div><span class="legend-color" style="background-color: #8b0000;"></span> CM (Commercial-Industrial) District</div>
-        <div><span class="legend-color" style="background-color: #8a2be2;"></span> CR (Restricted Commercial) District</div>
-        <div><span class="legend-color" style="background-color: #d3d3d3;"></span> FC (Flood Control Channel)</div>
-        <div><span class="legend-color" style="background-color: #ffa07a;"></span> M1 (Light Industrial) District</div>
-        <div><span class="legend-color" style="background-color: #a0522d;"></span> M2 (Medium Industrial)</div>
-        <div><span class="legend-color" style="background-color: #9370db;"></span> MU36 (Mixed-Use 36 units/acre)</div>
-        <div><span class="legend-color" style="background-color: #d8bfd8;"></span> MU40 (Mixed-Use 40 units/acre)</div>
-        <div><span class="legend-color" style="background-color: #006400;"></span> P/OS (Park/Open Space) District</div>
-        <div><span class="legend-color" style="background-color: #ffd700;"></span> P/SP (Public/Semi-Public) District</div>
-        <div><span class="legend-color" style="background-color: #ff4500;"></span> PF (Public Facilities) District</div>
-        <div><span class="legend-color" style="background-color: #32cd32;"></span> R-3 (Multiple Family Res-13-14 Units/Acre)</div>
-        <div><span class="legend-color" style="background-color: #ff6347;"></span> R-5 (Multiple Family Res-19-25 Units/Acre)</div>
-        <div><span class="legend-color" style="background-color: #40e0d0;"></span> R1 (Single-Family Residential) District</div>
-        <div><span class="legend-color" style="background-color: #ff7f50;"></span> R2 (Multiple-Family Residential -12 Units/Acre) District</div>
-        <div><span class="legend-color" style="background-color: #dc143c;"></span> R3 (Multiple-Family Residential 13 to 14 Units/Acre)</div>
-        <div><span class="legend-color" style="background-color: #8b4513;"></span> R4 (Multiple-Family Residential 15 to 18 Units/Acre)</div>
-        <div><span class="legend-color" style="background-color: #9400d3;"></span> R5 (Multiple-Family Residential 19 to 25 Units/Acre)</div>
-        <div><span class="legend-color" style="background-color: #d2691e;"></span> ROW (Right-of-Way)</div>
-        <div><span class="legend-color" style="background-color: #a9a9a9;"></span> RR/ROW (Railroad Right-of-Way)</div>
-        <div><span class="legend-color" style="background-color: #4682b4;"></span> SOI (Sphere of Influence)</div>
-        <div><span class="legend-color" style="background-color: #7fff00;"></span> SP-1 (Specific Plan) District</div>
-        <div><span class="legend-color" style="background-color: #adff2f;"></span> SP-2 (Specific Plan) District</div>
-        <div><span class="legend-color" style="background-color: #228b22;"></span> SP-3 (Westminster Mall Specific Plan)</div>
-
-    </div>
+    <!-- Header with Back to Home button -->
+    <header>
+        <h3>GIS Zoning Map (Westminster, CA)</h3>
+        <a href="https://yourhomepage.com" class="back-home-btn">Back to Home</a>
+    </header>
 
     <div id="map"></div>
 
-    <!-- Load the Google Maps JavaScript API and the Places library -->
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCopWxzsrH0C5BUwVKJl0iG3omupkgmw60&libraries=places&callback=initMap" async defer></script>
-    
+    <!-- Load the Google Maps JavaScript API -->
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCopWxzsrH0C5BUwVKJl0iG3omupkgmw60&callback=initMap" async defer></script>
+
     <script>
         let map;
-        let boundaryLayer, taxLotsLayer, zoningLayer, markers = [];
+        let boundaryLayer, taxLotsLayer, zoningLayer;
 
         // Initialize and add the map
         function initMap() {
-            const centerPoint = { lat: 33.7507, lng: -117.9935 }; 
+            const centerPoint = { lat: 33.7507, lng: -117.9935 }; // Centered on Westminster
 
             map = new google.maps.Map(document.getElementById('map'), {
                 zoom: 14,
                 center: centerPoint
             });
 
-            // Create buttons for toggling legend and controls
-            const toggleLegendBtn = document.createElement('button');
-            toggleLegendBtn.textContent = 'Toggle Legend';
-            toggleLegendBtn.classList.add('collapse-btn');
-            map.controls[google.maps.ControlPosition.TOP_RIGHT].push(toggleLegendBtn);
-
-            const toggleControlsBtn = document.createElement('button');
-            toggleControlsBtn.textContent = 'Toggle Layers';
-            toggleControlsBtn.classList.add('collapse-btn');
-            map.controls[google.maps.ControlPosition.TOP_RIGHT].push(toggleControlsBtn);
-
-            // Add the legend to the map
-            const legend = document.getElementById('legend');
-            map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(legend);
-
             // Load the City Boundary Layer
             boundaryLayer = new google.maps.Data();
             boundaryLayer.loadGeoJson('https://storage.googleapis.com/westminster_ca/Westminster_CityBoundary.geojson');
             boundaryLayer.setStyle({
-                fillOpacity: 0, // 100% transparent fill
-                strokeColor: '#000000', // Black border
+                fillOpacity: 0,
+                strokeColor: '#000000',
                 strokeWeight: 2
             });
             boundaryLayer.setMap(map);
 
-            // Load the Tax Lots Layer and apply the symbology based on "Status"
-            taxLotsLayer = new google.maps.Data();
-            taxLotsLayer.loadGeoJson('https://storage.googleapis.com/westminster_ca/Westminster_CityTaxLots.geojson');
-            taxLotsLayer.setStyle(styleLotsLayer);
-
-            // Load the Zoning Layer with previous symbology
+            // Load the Zoning Layer and add custom labels
             zoningLayer = new google.maps.Data();
             zoningLayer.loadGeoJson('https://storage.googleapis.com/westminster_ca/Westminster_CityZoning.geojson');
-            zoningLayer.setStyle(styleZoningLayer);
+            zoningLayer.setStyle({
+                fillOpacity: 0.6,
+                strokeColor: '#000000',
+                strokeWeight: 1
+            });
             zoningLayer.setMap(map);
 
-            // Add labels for ZONEDEF2 field
+            // Add custom labels for ZONEDEF2 field
             zoningLayer.addListener('addfeature', function(event) {
                 const zoneName = event.feature.getProperty('ZONEDEF2');
-                
-                // Find the polygon centroid or position
                 const geometry = event.feature.getGeometry();
-                const bounds = new google.maps.LatLngBounds();
-                geometry.forEachLatLng(function(latlng) {
-                    bounds.extend(latlng);
-                });
-                const center = bounds.getCenter();
 
-                // Create an InfoWindow for the ZONEDEF2 field
-                const infowindow = new google.maps.InfoWindow({
-                    content: zoneName,
-                    position: center
-                });
-                infowindow.open(map);
-                
-                // Store the InfoWindow in the feature's properties to manage it later
-                event.feature.setProperty('infowindow', infowindow);
-            });
-            
-            // Add layer controls
-            document.getElementById('boundary-layer').addEventListener('change', function() {
-                boundaryLayer.setMap(this.checked ? map : null);
+                // Create custom label
+                createCustomLabel(zoneName, geometry);
             });
 
-            document.getElementById('taxlots-layer').addEventListener('change', function() {
-                taxLotsLayer.setMap(this.checked ? map : null);
-            });
-
+            // Add layer controls for enabling/disabling zoning layer
             document.getElementById('zoning-layer').addEventListener('change', function() {
                 zoningLayer.setMap(this.checked ? map : null);
             });
-
-            // Add event listeners for the toggle buttons
-            toggleLegendBtn.addEventListener('click', function() {
-                toggleVisibility('legend');
-            });
-
-            toggleControlsBtn.addEventListener('click', function() {
-                toggleVisibility('controls');
-            });
-
-            // Initialize the search box
-            initSearchBox();
         }
 
-        // Initialize the search box for the map
-        function initSearchBox() {
-            const input = document.getElementById('pac-input');
-            const searchBox = new google.maps.places.SearchBox(input);
-            map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
-
-            // Bias the SearchBox results towards the current map view.
-            map.addListener('bounds_changed', function() {
-                searchBox.setBounds(map.getBounds());
+        // Create a custom label using OverlayView
+        function createCustomLabel(zoneName, geometry) {
+            const bounds = new google.maps.LatLngBounds();
+            geometry.forEachLatLng(function(latlng) {
+                bounds.extend(latlng);
             });
+            const center = bounds.getCenter();
 
-            // Listen for the event fired when the user selects a prediction and retrieves more details.
-            searchBox.addListener('places_changed', function() {
-                const places = searchBox.getPlaces();
+            // Custom OverlayView for the label
+            const customLabel = new google.maps.OverlayView();
+            customLabel.onAdd = function () {
+                const div = document.createElement('div');
+                div.className = 'zone-label';
+                div.innerHTML = zoneName;
+                this.div = div;
 
-                if (places.length == 0) {
-                    return;
-                }
-
-                // Clear out the old markers.
-                markers.forEach(function(marker) {
-                    marker.setMap(null);
-                });
-                markers = [];
-
-                // Get the icon, name, and location of each place.
-                const bounds = new google.maps.LatLngBounds();
-                places.forEach(function(place) {
-                    if (!place.geometry || !place.geometry.location) {
-                        console.log("Returned place contains no geometry");
-                        return;
-                    }
-
-                    const marker = new google.maps.Marker({
-                        map: map,
-                        title: place.name,
-                        position: place.geometry.location
-                    });
-
-                    markers.push(marker);
-
-                    if (place.geometry.viewport) {
-                        // Only geocode has viewport.
-                        bounds.union(place.geometry.viewport);
-                    } else {
-                        bounds.extend(place.geometry.location);
-                    }
-                });
-                map.fitBounds(bounds);
-            });
-        }
-
-        // Style function for the tax lots layer based on the "Status" property
-        function styleLotsLayer(feature) {
-            const status = feature.getProperty('Status');
-            console.log('Lot Status:', status); // Debugging line
-            let fillColor = '#ffa500'; // Default for null (gray)
-            
-            switch (status) {
-                case null:
-                    fillColor = '#808080'; // Gray for null
-                    break;
-                case 'Qualified':
-                    fillColor = '#00bfff'; // Light blue
-                    break;
-                case 'Contacted':
-                    fillColor = '#ff69b4'; // Pink
-                    break;
-                case 'Prospect':
-                    fillColor = '#ffd700'; // Gold
-                    break;
-                case 'Offer Out':
-                    fillColor = '#ff4500'; // Orange red
-                    break;
-                case 'Negotiation':
-                    fillColor = '#8a2be2'; // Blue violet
-                    break;
-                case 'Accepted Offer':
-                    fillColor = '#32cd32'; // Lime green
-                    break;
-                case 'PSA Signed':
-                    fillColor = '#ff6347'; // Tomato
-                    break;
-                case 'Closed':
-                    fillColor = '#9400d3'; // Dark violet
-                    break;
-                case 'No-Gos':
-                    fillColor = '#8b0000'; // Dark red
-                    break;
-                default:
-                    fillColor = '#808080'; // Gray for unspecified status
-            }
-
-            return {
-                fillColor: fillColor,
-                strokeColor: '#ff0000', // Red border
-                strokeWeight: 1,
-                fillOpacity: 0.5 // 50% transparency
+                const panes = this.getPanes();
+                panes.overlayLayer.appendChild(div);
             };
-        }
 
-        // Style function for the zoning layer (keep original)
-        function styleZoningLayer(feature) {
-            const zoneType = feature.getProperty('ZONEDEF2');
-            let fillColor = '#808080'; // Default color for unspecified zones
-            
-            // Assign colors based on the "ZONEDEF2" values
-            switch (zoneType) {
-                case 'C1 (Local Business) District': fillColor = '#00bfff'; break;  // Light blue
-                case 'C2 (General Business) District': fillColor = '#ffff66'; break;  // Light yellow
-                case 'CEM (Cemetery) District': fillColor = '#ff69b4'; break;  // Pink
-                case 'CM (Commercial-Industrial) District': fillColor = '#8b0000'; break;  // Dark red
-                case 'CR (Restricted Commercial) District': fillColor = '#8a2be2'; break;  // Blue violet
-                case 'FC (Flood Control Channel)': fillColor = '#d3d3d3'; break;  // Light gray
-                case 'M1 (Light Industrial) District': fillColor = '#ffa07a'; break;  // Light salmon
-                case 'M2 (Medium Industrial)': fillColor = '#a0522d'; break;  // Sienna
-                case 'MU36 (Mixed-Use 36 units/acre)': fillColor = '#9370db'; break;  // Medium purple
-                case 'MU40 (Mixed-Use 40 units/acre)': fillColor = '#d8bfd8'; break;  // Thistle
-                case 'P/OS (Park/Open Space) District': fillColor = '#006400'; break;  // Dark green
-                case 'P/SP (Public/Semi-Public) District': fillColor = '#ffd700'; break;  // Gold
-                case 'PF (Public Facilities) District': fillColor = '#ff4500'; break;  // Orange red
-                case 'R-3 (Multiple Family Res-13-14 Units/Acre)': fillColor = '#32cd32'; break;  // Lime green
-                case 'R-5 (Multiple Family Res-19-25 Units/Acre)': fillColor = '#ff6347'; break;  // Tomato
-                case 'R1 (Single-Family Residential) District': fillColor = '#40e0d0'; break;  // Turquoise
-                case 'R2 (Multiple-Family Residential -12 Units/Acre) District': fillColor = '#ff7f50'; break;  // Coral
-                case 'R3 (Multiple-Family Residential 13 to 14 Units/Acre) District': fillColor = '#dc143c'; break;  // Crimson
-                case 'R4 (Multiple-Family Residential 15 to 18 Units/Acre)': fillColor = '#8b4513'; break;  // Saddle brown
-                case 'R5 (Multiple-Family Residential 19 to 25 Units/Acre)': fillColor = '#9400d3'; break;  // Dark violet
-                case 'ROW (Right-of-Way)': fillColor = '#d2691e'; break;  // Chocolate
-                case 'RR/ROW (Railroad Right-of-Way)': fillColor = '#a9a9a9'; break;  // Dark gray
-                case 'SOI (Sphere of Influence)': fillColor = '#4682b4'; break;  // Steel blue
-                case 'SP-1 (Specific Plan) District': fillColor = '#7fff00'; break;  // Chartreuse
-                case 'SP-2 (Specific Plan) District': fillColor = '#adff2f'; break;  // Green yellow
-                case 'SP-3 (Westminster Mall Specific Plan)': fillColor = '#228b22'; break;  // Forest green
-                default: fillColor = '#808080'; break;  // Default gray for unspecified zones
-            }
-            
-            return {
-                fillColor: fillColor,
-                strokeColor: '#000000', // Optional: Border color for zoning
-                strokeWeight: 1,
-                fillOpacity: 0.6
+            customLabel.draw = function () {
+                const overlayProjection = this.getProjection();
+                const position = overlayProjection.fromLatLngToDivPixel(center);
+                const div = this.div;
+
+                div.style.left = position.x + 'px';
+                div.style.top = position.y + 'px';
+                div.style.position = 'absolute';
             };
-        }
 
-        // Toggle visibility function
-        function toggleVisibility(elementId) {
-            const element = document.getElementById(elementId);
-            if (element.style.display === 'none') {
-                element.style.display = 'block';
-            } else {
-                element.style.display = 'none';
-            }
+            customLabel.onRemove = function () {
+                this.div.parentNode.removeChild(this.div);
+                this.div = null;
+            };
+
+            customLabel.setMap(map);
         }
     </script>
 </body>
