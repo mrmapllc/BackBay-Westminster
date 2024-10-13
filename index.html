@@ -1,35 +1,62 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>GIS Zoning Map (Westminster, CA)</title>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GIS Zoning Map - Westminster, CA</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
         /* Basic styling */
-        body {
-            font-family: 'Roboto', sans-serif;
+        body, html {
             margin: 0;
             padding: 0;
+            height: 100%;
+            font-family: 'Roboto', sans-serif;
+        }
+
+        /* Navigation bar styling */
+        nav {
+            background-color: #333;
+            padding: 15px;
+            text-align: right;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            padding: 10px 20px;
+            font-weight: 500;
+        }
+
+        nav a:hover {
+            background-color: #575757;
+            border-radius: 5px;
+        }
+
+        /* Page container */
+        .container {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        /* Header styling */
+        header {
+            background-color: #f4f4f4;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 28px;
+            color: #333;
         }
 
         #map {
-            height: 90vh;
+            flex-grow: 1;
             width: 100%;
-        }
-
-        /* Styles for header */
-        header {
-            position: relative;
-            padding: 20px;
-            background-color: #f4f4f4;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        h3 {
-            margin: 0;
-            font-size: 24px;
-            color: #333;
         }
 
         /* Back to Home button */
@@ -41,32 +68,105 @@
             font-size: 16px;
             border-radius: 5px;
             transition: background-color 0.3s;
+            margin-top: 20px;
+            display: inline-block;
         }
 
         .back-home-btn:hover {
             background-color: #005f99;
         }
 
-        /* Styles for custom labels */
-        .zone-label {
-            color: #000;
+        /* Map controls */
+        .control-box {
+            padding: 5px 10px;
+            background-color: white;
+            border: 1px solid #ccc;
+            position: absolute;
+            z-index: 5;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+        }
+
+        #controls {
+            top: 20px;
+            right: 20px;
+            width: 200px;
+        }
+
+        #legend {
+            bottom: 20px;
+            left: 20px;
+            max-height: 300px;
+            overflow-y: auto;
             font-size: 12px;
-            font-weight: 400;
-            padding: 2px 5px;
-            background: rgba(255, 255, 255, 0.8);
-            border-radius: 4px;
-            white-space: nowrap;
+            width: 300px;
+        }
+
+        .legend-color {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            margin-right: 6px;
+            border: 1px solid #000;
+            vertical-align: middle;
+        }
+
+        /* Styled collapsible buttons */
+        .collapse-btn {
+            background-color: #333;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            cursor: pointer;
+            border-radius: 5px;
+            margin: 5px;
+            font-size: 14px;
+            transition: background-color 0.3s;
+        }
+
+        .collapse-btn:hover {
+            background-color: #555;
+        }
+
+        /* Loading spinner */
+        #loading {
+            display: none;
+            position: fixed;
+            z-index: 100;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        #loading img {
+            width: 50px;
         }
     </style>
 </head>
 <body>
-    <!-- Header with Back to Home button -->
-    <header>
-        <h3>GIS Zoning Map (Westminster, CA)</h3>
-        <a href="https://yourhomepage.com" class="back-home-btn">Back to Home</a>
-    </header>
 
-    <div id="map"></div>
+    <!-- Navigation Bar -->
+    <nav>
+        <a href="https://mrmapllc.github.io/BackBayHomePage/">Home</a>
+        <a href="#">Other Map</a>
+        <a href="#">Contact</a>
+    </nav>
+
+    <div class="container">
+
+        <!-- Header with Back to Home button -->
+        <header>
+            <h1>GIS Zoning Map - Westminster, CA</h1>
+        </header>
+
+        <!-- Map Container -->
+        <div id="map"></div>
+
+        <!-- Loading spinner -->
+        <div id="loading">
+            <img src="https://i.imgur.com/JfPpwOA.gif" alt="Loading...">
+        </div>
+    </div>
 
     <!-- Load the Google Maps JavaScript API -->
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCopWxzsrH0C5BUwVKJl0iG3omupkgmw60&callback=initMap" async defer></script>
@@ -74,9 +174,22 @@
     <script>
         let map;
         let boundaryLayer, taxLotsLayer, zoningLayer;
+        let isLoading = true;
+
+        // Show loading spinner while the map is loading
+        function showLoading() {
+            document.getElementById('loading').style.display = 'block';
+        }
+
+        // Hide loading spinner once the map is loaded
+        function hideLoading() {
+            document.getElementById('loading').style.display = 'none';
+        }
 
         // Initialize and add the map
         function initMap() {
+            showLoading();
+
             const centerPoint = { lat: 33.7507, lng: -117.9935 }; // Centered on Westminster
 
             map = new google.maps.Map(document.getElementById('map'), {
@@ -94,7 +207,7 @@
             });
             boundaryLayer.setMap(map);
 
-            // Load the Zoning Layer and add custom labels
+            // Load the Zoning Layer
             zoningLayer = new google.maps.Data();
             zoningLayer.loadGeoJson('https://storage.googleapis.com/westminster_ca/Westminster_CityZoning.geojson');
             zoningLayer.setStyle({
@@ -104,57 +217,10 @@
             });
             zoningLayer.setMap(map);
 
-            // Add custom labels for ZONEDEF2 field
-            zoningLayer.addListener('addfeature', function(event) {
-                const zoneName = event.feature.getProperty('ZONEDEF2');
-                const geometry = event.feature.getGeometry();
-
-                // Create custom label
-                createCustomLabel(zoneName, geometry);
+            // Hide the loading spinner once the map and layers are fully loaded
+            google.maps.event.addListenerOnce(map, 'idle', function(){
+                hideLoading();
             });
-
-            // Add layer controls for enabling/disabling zoning layer
-            document.getElementById('zoning-layer').addEventListener('change', function() {
-                zoningLayer.setMap(this.checked ? map : null);
-            });
-        }
-
-        // Create a custom label using OverlayView
-        function createCustomLabel(zoneName, geometry) {
-            const bounds = new google.maps.LatLngBounds();
-            geometry.forEachLatLng(function(latlng) {
-                bounds.extend(latlng);
-            });
-            const center = bounds.getCenter();
-
-            // Custom OverlayView for the label
-            const customLabel = new google.maps.OverlayView();
-            customLabel.onAdd = function () {
-                const div = document.createElement('div');
-                div.className = 'zone-label';
-                div.innerHTML = zoneName;
-                this.div = div;
-
-                const panes = this.getPanes();
-                panes.overlayLayer.appendChild(div);
-            };
-
-            customLabel.draw = function () {
-                const overlayProjection = this.getProjection();
-                const position = overlayProjection.fromLatLngToDivPixel(center);
-                const div = this.div;
-
-                div.style.left = position.x + 'px';
-                div.style.top = position.y + 'px';
-                div.style.position = 'absolute';
-            };
-
-            customLabel.onRemove = function () {
-                this.div.parentNode.removeChild(this.div);
-                this.div = null;
-            };
-
-            customLabel.setMap(map);
         }
     </script>
 </body>
