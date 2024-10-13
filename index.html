@@ -16,11 +16,34 @@
             overflow: hidden;
         }
 
-        /* Background container */
+        /* Navigation bar styling */
+        nav {
+            background-color: #333;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            padding: 10px 20px;
+            font-weight: 500;
+            border: 1px solid #ffffff;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+            background-color: transparent;
+        }
+
+        nav a:hover {
+            background-color: #575757;
+        }
+
+        /* Page container */
         .container {
             display: flex;
             flex-direction: column;
-            height: 100%;
+            height: calc(100% - 60px); /* Adjust height to account for the nav bar */
         }
 
         /* Header styling */
@@ -33,59 +56,30 @@
 
         h1 {
             margin: 0;
-            font-size: 28px;
+            font-size: 24px;
             color: #333;
         }
 
         #map {
             flex-grow: 1;
             width: 100%;
+            height: 100%; /* Ensure map takes up full height */
         }
 
-        /* Position the Tools button at the top-left */
-        #tools-btn {
-            position: absolute;
-            top: 15px;
-            left: 15px;
-            background-color: #3680eb;
-            color: white;
+        /* Tools button in the navigation bar */
+        .tools-btn {
             padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            font-size: 16px;
-            cursor: pointer;
-            text-decoration: none;
-            z-index: 999;
-            transition: background-color 0.3s ease;
-        }
-
-        #tools-btn:hover {
-            background-color: #203041;
-        }
-
-        /* Position the Home and Support buttons at the top-right */
-        .top-right-buttons {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            z-index: 999;
-        }
-
-        .top-right-buttons a {
-            background-color: #3680eb;
             color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            font-size: 16px;
-            cursor: pointer;
             text-decoration: none;
-            margin-left: 10px;
-            transition: background-color 0.3s ease;
+            font-size: 16px;
+            border: 1px solid white;
+            border-radius: 5px;
+            background-color: transparent;
+            transition: background-color 0.3s;
         }
 
-        .top-right-buttons a:hover {
-            background-color: #203041;
+        .tools-btn:hover {
+            background-color: #575757;
         }
 
         /* Control panel box (tools) positioned at the bottom left */
@@ -125,9 +119,30 @@
             border: 1px solid #000;
             vertical-align: middle;
         }
+
+        /* Loading spinner */
+        #loading {
+            display: none;
+            position: fixed;
+            z-index: 100;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        #loading img {
+            width: 50px;
+        }
     </style>
 </head>
 <body>
+
+    <!-- Navigation Bar -->
+    <nav>
+        <a href="https://mrmapllc.github.io/BackBayHomePage/" class="tools-btn">Home</a>
+        <a href="#" id="tools-btn" class="tools-btn">Tools</a>
+        <a href="https://mrmapgroup.com/contact-us" target="_blank" class="tools-btn">Support</a>
+    </nav>
 
     <div class="container">
 
@@ -139,15 +154,31 @@
         <!-- Map Container -->
         <div id="map"></div>
 
-    </div>
+        <!-- Loading spinner -->
+        <div id="loading">
+            <img src="https://i.imgur.com/JfPpwOA.gif" alt="Loading...">
+        </div>
 
-    <!-- Tools Button at Top Left -->
-    <a href="#" id="tools-btn">Tools</a>
+        <!-- Control Panel (hidden by default) -->
+        <div class="control-panel" id="control-panel">
+            <!-- Layers control box -->
+            <div class="control-box" id="controls">
+                <h4 style="margin: 0;">Layers</h4>
+                <label><input type="checkbox" id="boundary-layer" checked> City Boundary</label><br>
+                <label><input type="checkbox" id="taxlots-layer"> Tax Lots</label><br>
+                <label><input type="checkbox" id="zoning-layer" checked> Zoning</label>
+            </div>
 
-    <!-- Home and Support Buttons at Top Right -->
-    <div class="top-right-buttons">
-        <a href="https://mrmapllc.github.io/BackBayHomePage/">Home</a>
-        <a href="https://mrmapgroup.com/contact-us" target="_blank">Support</a>
+            <!-- Legend for zoning colors -->
+            <div id="legend" class="control-box">
+                <h4>Legend</h4>
+                <div><span class="legend-color" style="background-color: #00bfff;"></span> C1 (Local Business) District</div>
+                <div><span class="legend-color" style="background-color: #ffff66;"></span> C2 (General Business) District</div>
+                <div><span class="legend-color" style="background-color: #ff69b4;"></span> CEM (Cemetery) District</div>
+                <div><span class="legend-color" style="background-color: #8b0000;"></span> CM (Commercial-Industrial) District</div>
+                <div><span class="legend-color" style="background-color: #8a2be2;"></span> CR (Restricted Commercial) District</div>
+            </div>
+        </div>
     </div>
 
     <!-- Load the Google Maps JavaScript API -->
@@ -156,9 +187,32 @@
     <script>
         let map;
         let boundaryLayer, taxLotsLayer, zoningLayer;
+        let isLoading = true;
+
+        // Show loading spinner while the map is loading
+        function showLoading() {
+            document.getElementById('loading').style.display = 'block';
+        }
+
+        // Hide loading spinner once the map is loaded
+        function hideLoading() {
+            document.getElementById('loading').style.display = 'none';
+        }
+
+        // Toggle the control panel
+        document.getElementById('tools-btn').addEventListener('click', function() {
+            const controlPanel = document.getElementById('control-panel');
+            if (controlPanel.style.display === 'none' || controlPanel.style.display === '') {
+                controlPanel.style.display = 'block';
+            } else {
+                controlPanel.style.display = 'none';
+            }
+        });
 
         // Initialize and add the map
         function initMap() {
+            showLoading();
+
             const centerPoint = { lat: 33.7507, lng: -117.9935 }; // Centered on Westminster
 
             map = new google.maps.Map(document.getElementById('map'), {
@@ -182,13 +236,31 @@
             zoningLayer.loadGeoJson('https://storage.googleapis.com/westminster_ca/Westminster_CityZoning.geojson');
             zoningLayer.setStyle(styleZoningLayer);
             zoningLayer.setMap(map);
+
+            // Add layer control for tax lots and zoning layers
+            document.getElementById('boundary-layer').addEventListener('change', function() {
+                boundaryLayer.setMap(this.checked ? map : null);
+            });
+
+            document.getElementById('taxlots-layer').addEventListener('change', function() {
+                taxLotsLayer.setMap(this.checked ? map : null);
+            });
+
+            document.getElementById('zoning-layer').addEventListener('change', function() {
+                zoningLayer.setMap(this.checked ? map : null);
+            });
+
+            // Hide the loading spinner once the map and layers are fully loaded
+            google.maps.event.addListenerOnce(map, 'idle', function(){
+                hideLoading();
+            });
         }
 
         // Style function for zoning layer based on "ZONEDEF2" property
         function styleZoningLayer(feature) {
             const zoneType = feature.getProperty('ZONEDEF2');
             let fillColor = '#808080'; // Default color for unspecified zones
-
+            
             // Assign colors based on the "ZONEDEF2" values
             switch (zoneType) {
                 case 'C1 (Local Business) District': fillColor = '#00bfff'; break;  // Light blue
