@@ -29,8 +29,10 @@
             text-decoration: none;
             padding: 10px 20px;
             font-weight: 500;
+            border: 1px solid #ffffff;
             border-radius: 5px;
             transition: background-color 0.3s;
+            background-color: transparent;
         }
 
         nav a:hover {
@@ -66,24 +68,25 @@
         /* Tools button in the navigation bar */
         .tools-btn {
             padding: 10px 20px;
-            background-color: #0088cc;
             color: white;
             text-decoration: none;
             font-size: 16px;
+            border: 1px solid white;
             border-radius: 5px;
+            background-color: transparent;
             transition: background-color 0.3s;
         }
 
         .tools-btn:hover {
-            background-color: #005f99;
+            background-color: #575757;
         }
 
-        /* Hidden control panel (legend + layers) */
+        /* Control panel box (tools) positioned at the bottom left */
         .control-panel {
             display: none;
             position: absolute;
             background-color: white;
-            top: 70px;
+            bottom: 20px;
             left: 20px;
             padding: 10px;
             z-index: 10;
@@ -173,7 +176,6 @@
                 <div><span class="legend-color" style="background-color: #ff69b4;"></span> CEM (Cemetery) District</div>
                 <div><span class="legend-color" style="background-color: #8b0000;"></span> CM (Commercial-Industrial) District</div>
                 <div><span class="legend-color" style="background-color: #8a2be2;"></span> CR (Restricted Commercial) District</div>
-                <!-- Add other zoning categories as needed -->
             </div>
         </div>
     </div>
@@ -214,7 +216,8 @@
 
             map = new google.maps.Map(document.getElementById('map'), {
                 zoom: 14,
-                center: centerPoint
+                center: centerPoint,
+                gestureHandling: "greedy" // Allow zooming with mouse scroll directly
             });
 
             // Load the City Boundary Layer
