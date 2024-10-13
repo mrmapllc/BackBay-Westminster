@@ -11,7 +11,9 @@
             margin: 0;
             padding: 0;
             height: 100%;
+            width: 100%;
             font-family: 'Roboto', sans-serif;
+            overflow: hidden;
         }
 
         /* Navigation bar styling */
@@ -59,8 +61,8 @@
             width: 100%;
         }
 
-        /* Back to Home button */
-        .back-home-btn {
+        /* Tools button */
+        .tools-btn {
             padding: 10px 15px;
             background-color: #0088cc;
             color: white;
@@ -68,34 +70,39 @@
             font-size: 16px;
             border-radius: 5px;
             transition: background-color 0.3s;
-            margin-top: 20px;
-            display: inline-block;
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            z-index: 10;
         }
 
-        .back-home-btn:hover {
+        .tools-btn:hover {
             background-color: #005f99;
         }
 
-        /* Map controls */
-        .control-box {
-            padding: 5px 10px;
-            background-color: white;
-            border: 1px solid #ccc;
+        /* Hidden control panel (legend + layers) */
+        .control-panel {
+            display: none;
             position: absolute;
-            z-index: 5;
+            background-color: white;
+            top: 70px;
+            left: 20px;
+            padding: 10px;
+            z-index: 10;
             box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
             border-radius: 8px;
         }
 
+        /* Map controls */
+        .control-box {
+            margin-bottom: 20px;
+        }
+
         #controls {
-            top: 20px;
-            right: 20px;
             width: 200px;
         }
 
         #legend {
-            bottom: 20px;
-            left: 20px;
             max-height: 300px;
             overflow-y: auto;
             font-size: 12px;
@@ -166,6 +173,31 @@
         <div id="loading">
             <img src="https://i.imgur.com/JfPpwOA.gif" alt="Loading...">
         </div>
+
+        <!-- Tools button -->
+        <button class="tools-btn" id="tools-btn">Tools</button>
+
+        <!-- Control Panel (hidden by default) -->
+        <div class="control-panel" id="control-panel">
+            <!-- Layers control box -->
+            <div class="control-box" id="controls">
+                <h4 style="margin: 0;">Layers</h4>
+                <label><input type="checkbox" id="boundary-layer" checked> City Boundary</label><br>
+                <label><input type="checkbox" id="taxlots-layer"> Tax Lots</label><br>
+                <label><input type="checkbox" id="zoning-layer" checked> Zoning</label>
+            </div>
+
+            <!-- Legend for zoning colors -->
+            <div id="legend" class="control-box">
+                <h4>Legend</h4>
+                <div><span class="legend-color" style="background-color: #00bfff;"></span> C1 (Local Business) District</div>
+                <div><span class="legend-color" style="background-color: #ffff66;"></span> C2 (General Business) District</div>
+                <div><span class="legend-color" style="background-color: #ff69b4;"></span> CEM (Cemetery) District</div>
+                <div><span class="legend-color" style="background-color: #8b0000;"></span> CM (Commercial-Industrial) District</div>
+                <div><span class="legend-color" style="background-color: #8a2be2;"></span> CR (Restricted Commercial) District</div>
+                <!-- Add other zoning categories as needed -->
+            </div>
+        </div>
     </div>
 
     <!-- Load the Google Maps JavaScript API -->
@@ -185,6 +217,16 @@
         function hideLoading() {
             document.getElementById('loading').style.display = 'none';
         }
+
+        // Toggle the control panel
+        document.getElementById('tools-btn').addEventListener('click', function() {
+            const controlPanel = document.getElementById('control-panel');
+            if (controlPanel.style.display === 'none' || controlPanel.style.display === '') {
+                controlPanel.style.display = 'block';
+            } else {
+                controlPanel.style.display = 'none';
+            }
+        });
 
         // Initialize and add the map
         function initMap() {
@@ -210,17 +252,49 @@
             // Load the Zoning Layer
             zoningLayer = new google.maps.Data();
             zoningLayer.loadGeoJson('https://storage.googleapis.com/westminster_ca/Westminster_CityZoning.geojson');
-            zoningLayer.setStyle({
-                fillOpacity: 0.6,
-                strokeColor: '#000000',
-                strokeWeight: 1
-            });
+            zoningLayer.setStyle(styleZoningLayer);
             zoningLayer.setMap(map);
+
+            // Add layer control for tax lots and zoning layers
+            document.getElementById('boundary-layer').addEventListener('change', function() {
+                boundaryLayer.setMap(this.checked ? map : null);
+            });
+
+            document.getElementById('taxlots-layer').addEventListener('change', function() {
+                taxLotsLayer.setMap(this.checked ? map : null);
+            });
+
+            document.getElementById('zoning-layer').addEventListener('change', function() {
+                zoningLayer.setMap(this.checked ? map : null);
+            });
 
             // Hide the loading spinner once the map and layers are fully loaded
             google.maps.event.addListenerOnce(map, 'idle', function(){
                 hideLoading();
             });
+        }
+
+        // Style function for zoning layer based on "ZONEDEF2" property
+        function styleZoningLayer(feature) {
+            const zoneType = feature.getProperty('ZONEDEF2');
+            let fillColor = '#808080'; // Default color for unspecified zones
+            
+            // Assign colors based on the "ZONEDEF2" values
+            switch (zoneType) {
+                case 'C1 (Local Business) District': fillColor = '#00bfff'; break;  // Light blue
+                case 'C2 (General Business) District': fillColor = '#ffff66'; break;  // Light yellow
+                case 'CEM (Cemetery) District': fillColor = '#ff69b4'; break;  // Pink
+                case 'CM (Commercial-Industrial) District': fillColor = '#8b0000'; break;  // Dark red
+                case 'CR (Restricted Commercial) District': fillColor = '#8a2be2'; break;  // Blue violet
+                default: fillColor = '#808080'; break;  // Default gray for unspecified zones
+            }
+
+            return {
+                fillColor: fillColor,
+                strokeColor: '#000000', // Black border for zoning
+                strokeWeight: 1,
+                fillOpacity: 0.6 // 60% opacity
+            };
         }
     </script>
 </body>
