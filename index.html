@@ -306,19 +306,30 @@
                 const siteAddress = event.feature.getProperty('SiteAddres') || 'No Address Available';
                 const zoning = event.feature.getProperty('ZONEDEF2') || 'Zoning Not Specified';
                 const legalDescription = event.feature.getProperty('LegalDescr') || 'Legal Description Not Available';
-        
+                
+                // Add new fields
+                const mailAddress = event.feature.getProperty('MailAddres') || 'Mail Address Not Available';
+                const legalLotID = event.feature.getProperty('LegalLotID') || 'Legal Lot ID Not Available';
+                const assessmentNo = event.feature.getProperty('Assessment') || 'Assessment No. Not Available';
+            
                 const contentString = `
                     <div style="margin: 0; padding: 5px;">
                         <h3 style="margin: 0; padding: 0; font-size: 18px;">${siteAddress}</h3>
                         <p style="margin: 5px 0; padding: 0;"><strong>Zoning:</strong> ${zoning}</p>
                         <p style="margin: 5px 0; padding: 0;"><strong>Legal Description:</strong> ${legalDescription}</p>
+                        
+                        <!-- Add new fields below -->
+                        <p style="margin: 5px 0; padding: 0;"><strong>Mail Address:</strong> ${mailAddress}</p>
+                        <p style="margin: 5px 0; padding: 0;"><strong>Legal Lot ID:</strong> ${legalLotID}</p>
+                        <p style="margin: 5px 0; padding: 0;"><strong>Assessment No.:</strong> ${assessmentNo}</p>
                     </div>
                 `;
-        
+            
                 infoWindow.setContent(contentString);
                 infoWindow.setPosition(event.latLng);
                 infoWindow.open(map);
             });
+
         
             // Add a click listener to the zoning layer for a simple pop-up
             zoningLayer.addListener('click', function(event) {
