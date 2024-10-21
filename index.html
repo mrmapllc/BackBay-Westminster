@@ -311,6 +311,7 @@
                 const mailAddress = event.feature.getProperty('MailAddres') || 'Mail Address Not Available';
                 const legalLotID = event.feature.getProperty('LegalLotID') || 'Legal Lot ID Not Available';
                 const assessmentNo = event.feature.getProperty('Assessment') || 'Assessment No. Not Available';
+                const Shape_Area = event.feature.getProperty('Shape_Area') || 'Estimated SqFt. Not Available';
             
                 const contentString = `
                     <div style="margin: 0; padding: 5px;">
@@ -322,6 +323,7 @@
                         <p style="margin: 5px 0; padding: 0;"><strong>Mail Address:</strong> ${mailAddress}</p>
                         <p style="margin: 5px 0; padding: 0;"><strong>Legal Lot ID:</strong> ${legalLotID}</p>
                         <p style="margin: 5px 0; padding: 0;"><strong>Assessment No.:</strong> ${assessmentNo}</p>
+                        <p style="margin: 5px 0; padding: 0;"><strong>Estimated SqFt:</strong> ${Shape_Area}</p>
                     </div>
                 `;
             
