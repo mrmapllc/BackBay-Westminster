@@ -311,8 +311,11 @@
                 const mailAddress = event.feature.getProperty('MailAddres') || 'Mail Address Not Available';
                 const legalLotID = event.feature.getProperty('LegalLotID') || 'Legal Lot ID Not Available';
                 const assessmentNo = event.feature.getProperty('Assessment') || 'Assessment No. Not Available';
-                const Shape_Area = event.feature.getProperty('Shape_Area') || 'Estimated SqFt. Not Available';
-            
+                
+                // Ensure two decimals for numerical values like Shape_Area
+                let shapeArea = event.feature.getProperty('Shape_Area');
+                shapeArea = shapeArea ? shapeArea.toFixed(2) : 'Estimated SqFt. Not Available'; // Format to 2 decimals if available
+                
                 const contentString = `
                     <div style="margin: 0; padding: 5px;">
                         <h3 style="margin: 0; padding: 0; font-size: 18px;">${siteAddress}</h3>
@@ -323,9 +326,15 @@
                         <p style="margin: 5px 0; padding: 0;"><strong>Mail Address:</strong> ${mailAddress}</p>
                         <p style="margin: 5px 0; padding: 0;"><strong>Legal Lot ID:</strong> ${legalLotID}</p>
                         <p style="margin: 5px 0; padding: 0;"><strong>Assessment No.:</strong> ${assessmentNo}</p>
-                        <p style="margin: 5px 0; padding: 0;"><strong>Estimated SqFt:</strong> ${Shape_Area}</p>
+                        <p style="margin: 5px 0; padding: 0;"><strong>Estimated SqFt:</strong> ${shapeArea}</p>
                     </div>
                 `;
+            
+                infoWindow.setContent(contentString);
+                infoWindow.setPosition(event.latLng);
+                infoWindow.open(map);
+            });
+
             
                 infoWindow.setContent(contentString);
                 infoWindow.setPosition(event.latLng);
