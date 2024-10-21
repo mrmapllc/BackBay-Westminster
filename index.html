@@ -314,7 +314,11 @@
                 
                 // Ensure two decimals for numerical values like Shape_Area
                 let shapeArea = event.feature.getProperty('Shape_Area');
-                shapeArea = shapeArea ? shapeArea.toFixed(2) : 'Estimated SqFt. Not Available'; // Format to 2 decimals if available
+                if (shapeArea && !isNaN(shapeArea)) {
+                    shapeArea = shapeArea.toFixed(2); // Format to 2 decimals if it's a number
+                } else {
+                    shapeArea = 'Estimated SqFt. Not Available'; // Handle non-numeric or undefined case
+                }
                 
                 const contentString = `
                     <div style="margin: 0; padding: 5px;">
@@ -329,6 +333,12 @@
                         <p style="margin: 5px 0; padding: 0;"><strong>Estimated SqFt:</strong> ${shapeArea}</p>
                     </div>
                 `;
+            
+                infoWindow.setContent(contentString);
+                infoWindow.setPosition(event.latLng);
+                infoWindow.open(map);
+            });
+
             
                 infoWindow.setContent(contentString);
                 infoWindow.setPosition(event.latLng);
