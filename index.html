@@ -314,10 +314,10 @@
                 
                 // Ensure two decimals for numerical values like Shape_Area
                 let shapeArea = event.feature.getProperty('Shape_Area');
-                if (shapeArea && !isNaN(shapeArea)) {
-                    shapeArea = shapeArea.toFixed(2); // Format to 2 decimals if it's a number
+                if (shapeArea) {
+                    shapeArea = shapeArea.toFixed(2);  // Format to 2 decimals if available
                 } else {
-                    shapeArea = 'Estimated SqFt. Not Available'; // Handle non-numeric or undefined case
+                    shapeArea = 'Estimated SqFt. Not Available';
                 }
                 
                 const contentString = `
@@ -339,17 +339,6 @@
                 infoWindow.open(map);
             });
 
-            
-                infoWindow.setContent(contentString);
-                infoWindow.setPosition(event.latLng);
-                infoWindow.open(map);
-            });
-
-            
-                infoWindow.setContent(contentString);
-                infoWindow.setPosition(event.latLng);
-                infoWindow.open(map);
-            });
 
         
             // Add a click listener to the zoning layer for a simple pop-up
