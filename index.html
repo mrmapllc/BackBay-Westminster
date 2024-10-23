@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GIS Zoning Map - Westminster, CA</title>
+    <title>GIS Dashboard - Westminster, CA</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
         /* Basic styling */
@@ -13,7 +13,6 @@
             height: 100%;
             width: 100%;
             font-family: 'Roboto', sans-serif;
-            overflow: hidden;
         }
 
         /* Navigation bar styling */
@@ -24,23 +23,6 @@
             justify-content: space-between;
         }
 
-        /* Map Search Bar */
-        .controls {
-            margin-top: 10px;
-            background-color: #fff;
-            border-radius: 3px;
-            border: 1px solid transparent;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
-            font-size: 16px;
-            outline: none;
-            padding: 10px;
-            margin-left: 10px;
-            width: 300px;
-            height: 30px;
-            box-sizing: border-box;
-            text-overflow: ellipsis;
-        }
-        
         nav a {
             color: white;
             text-decoration: none;
@@ -56,105 +38,16 @@
             background-color: #575757;
         }
 
-        /* Page container */
         .container {
             display: flex;
             flex-direction: column;
-            height: calc(100% - 60px); /* Adjust height to account for the nav bar */
+            height: 100%;
         }
 
-        /* Header styling */
-        header {
-            background-color: #f4f4f4;
-            padding: 10px;
-            text-align: center;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-        }
-
-        h1 {
-            margin: 0;
-            font-size: 24px;
-            color: #333;
-        }
-
-        #note {
-            font-size: 14px;
-            color: #888;
-            margin-top: 5px;
-        }
-
-        #map {
+        #map-container {
             flex-grow: 1;
             width: 100%;
-            height: 100%; /* Ensure map takes up full height */
-        }
-
-        /* Tools button in the navigation bar */
-        .tools-btn {
-            padding: 10px 20px;
-            color: white;
-            text-decoration: none;
-            font-size: 16px;
-            border: 1px solid white;
-            border-radius: 5px;
-            background-color: transparent;
-            transition: background-color 0.3s;
-        }
-
-        .tools-btn:hover {
-            background-color: #575757;
-        }
-
-        /* Control panel box (tools) positioned at the bottom left */
-        .control-panel {
-            display: none;
-            position: absolute;
-            background-color: white;
-            bottom: 20px;
-            left: 20px;
-            padding: 10px;
-            z-index: 10;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
-            border-radius: 8px;
-        }
-
-        /* Map controls */
-        .control-box {
-            margin-bottom: 20px;
-        }
-
-        #controls {
-            width: 200px;
-        }
-
-        #legend {
-            max-height: 300px;
-            overflow-y: auto;
-            font-size: 12px;
-            width: 300px;
-        }
-
-        .legend-color {
-            display: inline-block;
-            width: 16px;
-            height: 16px;
-            margin-right: 6px;
-            border: 1px solid #000;
-            vertical-align: middle;
-        }
-
-        /* Loading spinner */
-        #loading {
-            display: none;
-            position: fixed;
-            z-index: 100;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-        }
-
-        #loading img {
-            width: 50px;
+            height: 100%;
         }
     </style>
 </head>
@@ -163,323 +56,17 @@
     <!-- Navigation Bar -->
     <nav>
         <a href="https://mrmapllc.github.io/BackBayHomePage/" class="tools-btn">Home</a>
-        <a href="#" id="tools-btn" class="tools-btn">Tools</a>
         <a href="https://mrmapgroup.com/contact-us" target="_blank" class="tools-btn">Support</a>
     </nav>
 
+    <!-- Main Container -->
     <div class="container">
-
-        <!-- Header -->
-        <header>
-            <h1>GIS Zoning Map - Westminster, CA</h1>
-            <p id="note">Note: Best viewed in Google Chrome</p>
-        </header>
-
-        <!-- Map Container -->
-        <div id="map"></div>
-
-        <!-- Add the search bar input field -->
-        <input id="pac-input" class="controls" type="text" placeholder="Search for an address" />
-        
-        <!-- Loading spinner -->
-        <div id="loading">
-            <img src="https://i.imgur.com/JfPpwOA.gif" alt="Loading...">
-        </div>
-
-        <!-- Control Panel (hidden by default) -->
-        <div class="control-panel" id="control-panel">
-            <!-- Layers control box -->
-            <div class="control-box" id="controls">
-                <h4 style="margin: 0;">Layers</h4>
-                <label><input type="checkbox" id="boundary-layer" checked> City Boundary</label><br>
-                <label><input type="checkbox" id="taxlots-layer"> Tax Lots</label><br>
-                <label><input type="checkbox" id="zoning-layer" checked> Zoning</label>
-            </div>
-
-            <!-- Legend for zoning colors -->
-            <div id="legend" class="control-box">
-                <h4>Legend</h4>
-                <div><span class="legend-color" style="background-color: #00bfff;"></span> C1 (Local Business) District</div>
-                <div><span class="legend-color" style="background-color: #ffff66;"></span> C2 (General Business) District</div>
-                <div><span class="legend-color" style="background-color: #ff69b4;"></span> CEM (Cemetery) District</div>
-                <div><span class="legend-color" style="background-color: #8b0000;"></span> CM (Commercial-Industrial) District</div>
-                <div><span class="legend-color" style="background-color: #8a2be2;"></span> CR (Restricted Commercial) District</div>
-                <div><span class="legend-color" style="background-color: #d3d3d3;"></span> FC (Flood Control Channel)</div>
-                <div><span class="legend-color" style="background-color: #ffa07a;"></span> M1 (Light Industrial) District</div>
-                <div><span class="legend-color" style="background-color: #a0522d;"></span> M2 (Medium Industrial)</div>
-                <div><span class="legend-color" style="background-color: #9370db;"></span> MU36 (Mixed-Use 36 units/acre)</div>
-                <div><span class="legend-color" style="background-color: #d8bfd8;"></span> MU40 (Mixed-Use 40 units/acre)</div>
-                <div><span class="legend-color" style="background-color: #006400;"></span> P/OS (Park/Open Space) District</div>
-                <div><span class="legend-color" style="background-color: #ffd700;"></span> P/SP (Public/Semi-Public) District</div>
-                <div><span class="legend-color" style="background-color: #ff4500;"></span> PF (Public Facilities) District</div>
-                <div><span class="legend-color" style="background-color: #40e0d0;"></span> R1 (Single-Family Residential) District</div>
-                <div><span class="legend-color" style="background-color: #ff7f50;"></span> R2 (Multiple-Family Residential -12 Units/Acre) District</div>
-                <div><span class="legend-color" style="background-color: #dc143c;"></span> R3 (Multiple-Family Residential 13 to 14 Units/Acre)</div>
-                <div><span class="legend-color" style="background-color: #8b4513;"></span> R4 (Multiple-Family Residential 15 to 18 Units/Acre)</div>
-                <div><span class="legend-color" style="background-color: #9400d3;"></span> R5 (Multiple-Family Residential 19 to 25 Units/Acre)</div>
-                <div><span class="legend-color" style="background-color: #d2691e;"></span> ROW (Right-of-Way)</div>
-                <div><span class="legend-color" style="background-color: #a9a9a9;"></span> RR/ROW (Railroad Right-of-Way)</div>
-                <div><span class="legend-color" style="background-color: #4682b4;"></span> SOI (Sphere of Influence)</div>
-                <div><span class="legend-color" style="background-color: #7fff00;"></span> SP-1 (Specific Plan) District</div>
-                <div><span class="legend-color" style="background-color: #adff2f;"></span> SP-2 (Specific Plan) District</div>
-                <div><span class="legend-color" style="background-color: #228b22;"></span> SP-3 (Westminster Mall Specific Plan)</div>
-            </div>
-
+        <!-- Dashboard iFrame -->
+        <div id="map-container">
+            <iframe src="https://mrmap.maps.arcgis.com/apps/dashboards/bad867585b9a4b94b41922fcd75fde20" 
+                    width="100%" height="100%" frameborder="0" allowfullscreen>
+            </iframe>
         </div>
     </div>
-
-    <!-- Load the Google Maps JavaScript API and Places Library -->
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCopWxzsrH0C5BUwVKJl0iG3omupkgmw60&libraries=places&callback=initMap" async defer></script>
-
-    <script>
-        let map;
-        let boundaryLayer, taxLotsLayer, zoningLayer;
-        let isLoading = true;
-        let infoWindow;
-        let markers = []; // To store search results markers
-
-        let zoningPopUpActive = true;
-        let lotPopUpActive = false;
-
-        // Show loading spinner while the map is loading
-        function showLoading() {
-            document.getElementById('loading').style.display = 'block';
-        }
-
-        // Hide loading spinner once the map is loaded
-        function hideLoading() {
-            document.getElementById('loading').style.display = 'none';
-        }
-
-        // Toggle the control panel
-        document.getElementById('tools-btn').addEventListener('click', function() {
-            const controlPanel = document.getElementById('control-panel');
-            if (controlPanel.style.display === 'none' || controlPanel.style.display === '') {
-                controlPanel.style.display = 'block';
-            } else {
-                controlPanel.style.display = 'none';
-            }
-        });
-
-        // Initialize and add the map
-        function initMap() {
-            showLoading();
-        
-            const centerPoint = { lat: 33.7507, lng: -117.9935 }; // Centered on Westminster
-        
-            map = new google.maps.Map(document.getElementById('map'), {
-                zoom: 13, // Zoom set to 13
-                center: centerPoint,
-                gestureHandling: "greedy" // Allow zooming with mouse scroll directly
-            });
-        
-            infoWindow = new google.maps.InfoWindow();
-        
-            // Load the City Boundary Layer
-            boundaryLayer = new google.maps.Data();
-            boundaryLayer.loadGeoJson('https://storage.googleapis.com/westminster_ca/Westminster_CityBoundary.geojson');
-            boundaryLayer.setStyle({
-                fillOpacity: 0,
-                strokeColor: '#000000',
-                strokeWeight: 2
-            });
-            boundaryLayer.setMap(map);
-        
-            // Load the Zoning Layer
-            zoningLayer = new google.maps.Data();
-            zoningLayer.loadGeoJson('https://storage.googleapis.com/westminster_ca/Westminster_CityZoning.geojson');
-            zoningLayer.setStyle(styleZoningLayer);
-            zoningLayer.setMap(map);
-        
-            // Load the Tax Lots Layer (Ensure it loads after the zoning layer so it appears on top)
-            taxLotsLayer = new google.maps.Data();
-            taxLotsLayer.loadGeoJson('https://storage.googleapis.com/westminster_ca/Westminster_CityTaxLots.geojson');
-            taxLotsLayer.setStyle({
-                fillOpacity: 0, // Full transparency
-                strokeColor: '#FF0000', // Red border
-                strokeWeight: 2
-            });
-            taxLotsLayer.setMap(map);
-        
-            // Add a click listener to the tax lots layer to show a pop-up with specific information
-            taxLotsLayer.addListener('click', function(event) {
-                const siteAddress = event.feature.getProperty('SiteAddres') || 'No Address Available';
-                const zoning = event.feature.getProperty('ZONEDEF2') || 'Zoning Not Specified';
-                const legalDescription = event.feature.getProperty('LegalDescr') || 'Legal Description Not Available';
-                
-                // Add new fields
-                const mailAddress = event.feature.getProperty('MailAddres') || 'Mail Address Not Available';
-                const legalLotID = event.feature.getProperty('LegalLotID') || 'Legal Lot ID Not Available';
-                const assessmentNo = event.feature.getProperty('Assessment') || 'Assessment No. Not Available';
-                
-                // Ensure two decimals for numerical values like Shape_Area
-                let shapeArea = event.feature.getProperty('Shape_Area');
-                if (shapeArea) {
-                    shapeArea = shapeArea.toFixed(2);  // Format to 2 decimals if available
-                } else {
-                    shapeArea = 'Estimated SqFt. Not Available';
-                }
-                
-                const contentString = `
-                    <div style="margin: 0; padding: 5px;">
-                        <h3 style="margin: 0; padding: 0; font-size: 18px;">${siteAddress}</h3>
-                        <p style="margin: 5px 0; padding: 0;"><strong>Zoning:</strong> ${zoning}</p>
-                        <p style="margin: 5px 0; padding: 0;"><strong>Legal Description:</strong> ${legalDescription}</p>
-                        
-                        <!-- Add new fields below -->
-                        <p style="margin: 5px 0; padding: 0;"><strong>Mail Address:</strong> ${mailAddress}</p>
-                        <p style="margin: 5px 0; padding: 0;"><strong>Legal Lot ID:</strong> ${legalLotID}</p>
-                        <p style="margin: 5px 0; padding: 0;"><strong>Assessment No.:</strong> ${assessmentNo}</p>
-                        <p style="margin: 5px 0; padding: 0;"><strong>Estimated SqFt:</strong> ${shapeArea}</p>
-                    </div>
-                `;
-            
-                infoWindow.setContent(contentString);
-                infoWindow.setPosition(event.latLng);
-                infoWindow.open(map);
-            });
-
-
-        
-            // Add a click listener to the zoning layer for a simple pop-up
-            zoningLayer.addListener('click', function(event) {
-                if (!lotPopUpActive) { // Ensure zoning pop-up only shows when lot pop-up is not active
-                    const zoning = event.feature.getProperty('ZONEDEF2') || 'Zoning Not Specified';
-        
-                    const contentString = `
-                        <div style="margin: 0; padding: 5px;">
-                            <p style="margin: 0; padding: 0;"><strong>Zoning:</strong> ${zoning}</p>
-                        </div>
-                    `;
-        
-                    infoWindow.setContent(contentString);
-                    infoWindow.setPosition(event.latLng);
-                    infoWindow.open(map);
-                }
-            });
-        
-            // Add layer control for tax lots and zoning layers
-            document.getElementById('boundary-layer').addEventListener('change', function() {
-                boundaryLayer.setMap(this.checked ? map : null);
-            });
-        
-            document.getElementById('taxlots-layer').addEventListener('change', function() {
-                lotPopUpActive = this.checked;
-                taxLotsLayer.setMap(this.checked ? map : null);
-            });
-        
-            document.getElementById('zoning-layer').addEventListener('change', function() {
-                zoningPopUpActive = this.checked;
-                zoningLayer.setMap(this.checked ? map : null);
-            });
-        
-            // Hide the loading spinner once the map and layers are fully loaded
-            google.maps.event.addListenerOnce(map, 'idle', function(){
-                hideLoading();
-            });
-        
-            // Initialize search box
-            initSearchBox();
-        }
-
-
-        // Initialize the search box for the map
-        function initSearchBox() {
-            const input = document.createElement('input');
-            input.type = 'text';
-            input.placeholder = 'Search for an address';
-            input.classList.add('controls');
-            map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
-
-            const searchBox = new google.maps.places.SearchBox(input);
-
-            // Bias the SearchBox results towards current map's viewport
-            map.addListener('bounds_changed', function() {
-                searchBox.setBounds(map.getBounds());
-            });
-
-            // Listen for the event fired when the user selects a prediction and retrieves more details.
-            searchBox.addListener('places_changed', function() {
-                const places = searchBox.getPlaces();
-
-                if (places.length === 0) {
-                    return;
-                }
-
-                // Clear out the old markers.
-                markers.forEach(function(marker) {
-                    marker.setMap(null);
-                });
-                markers = [];
-
-                // For each place, get the icon, name and location.
-                const bounds = new google.maps.LatLngBounds();
-                places.forEach(function(place) {
-                    if (!place.geometry || !place.geometry.location) {
-                        console.log("Returned place contains no geometry");
-                        return;
-                    }
-
-                    // Create a marker for each place.
-                    const marker = new google.maps.Marker({
-                        map: map,
-                        title: place.name,
-                        position: place.geometry.location
-                    });
-
-                    markers.push(marker);
-
-                    if (place.geometry.viewport) {
-                        bounds.union(place.geometry.viewport);
-                    } else {
-                        bounds.extend(place.geometry.location);
-                    }
-                });
-                map.fitBounds(bounds);
-            });
-        }
-
-        // Style function for zoning layer based on "ZONEDEF2" property
-        function styleZoningLayer(feature) {
-            const zoneType = feature.getProperty('ZONEDEF2');
-            let fillColor = '#808080'; // Default color for unspecified zones
-            
-            // Assign colors based on the "ZONEDEF2" values
-            switch (zoneType) {
-                case 'C1 (Local Business) District': fillColor = '#00bfff'; break;  // Light blue
-                case 'C2 (General Business) District': fillColor = '#ffff66'; break;  // Light yellow
-                case 'CEM (Cemetery) District': fillColor = '#ff69b4'; break;  // Pink
-                case 'CM (Commercial-Industrial) District': fillColor = '#8b0000'; break;  // Dark red
-                case 'CR (Restricted Commercial) District': fillColor = '#8a2be2'; break;  // Blue violet
-                case 'FC (Flood Control Channel)': fillColor = '#d3d3d3'; break;  // Light gray
-                case 'M1 (Light Industrial) District': fillColor = '#ffa07a'; break;  // Light salmon
-                case 'M2 (Medium Industrial)': fillColor = '#a0522d'; break;  // Sienna
-                case 'MU36 (Mixed-Use 36 units/acre)': fillColor = '#9370db'; break;  // Medium purple
-                case 'MU40 (Mixed-Use 40 units/acre)': fillColor = '#d8bfd8'; break;  // Thistle
-                case 'P/OS (Park/Open Space) District': fillColor = '#006400'; break;  // Dark green
-                case 'P/SP (Public/Semi-Public) District': fillColor = '#ffd700'; break;  // Gold
-                case 'PF (Public Facilities) District': fillColor = '#ff4500'; break;  // Orange red
-                case 'R1 (Single-Family Residential) District': fillColor = '#40e0d0'; break;  // Turquoise
-                case 'R2 (Multiple-Family Residential -12 Units/Acre) District': fillColor = '#ff7f50'; break;  // Coral
-                case 'R3 (Multiple-Family Residential 13 to 14 Units/Acre)': fillColor = '#dc143c'; break;  // Crimson
-                case 'R4 (Multiple-Family Residential 15 to 18 Units/Acre)': fillColor = '#8b4513'; break;  // Saddle brown
-                case 'R5 (Multiple-Family Residential 19 to 25 Units/Acre)': fillColor = '#9400d3'; break;  // Dark violet
-                case 'ROW (Right-of-Way)': fillColor = '#d2691e'; break;  // Chocolate
-                case 'RR/ROW (Railroad Right-of-Way)': fillColor = '#a9a9a9'; break;  // Dark gray
-                case 'SOI (Sphere of Influence)': fillColor = '#4682b4'; break;  // Steel blue
-                case 'SP-1 (Specific Plan) District': fillColor = '#7fff00'; break;  // Chartreuse
-                case 'SP-2 (Specific Plan) District': fillColor = '#adff2f'; break;  // Green yellow
-                case 'SP-3 (Westminster Mall Specific Plan)': fillColor = '#228b22'; break;  // Forest green
-                default: fillColor = '#808080'; break;  // Default gray for unspecified zones
-            }
-
-            return {
-                fillColor: fillColor,
-                strokeColor: '#000000', // Black border for zoning
-                strokeWeight: 1,
-                fillOpacity: 0.6 // 60% opacity
-            };
-        }
-    </script>
 </body>
 </html>
